@@ -76,7 +76,7 @@ internal fun LazyListScope.trailerAndAudioSettingsItems(
     onSetSkipSilence: (Boolean) -> Unit,
     onSetRememberAudioDelayPerDevice: (Boolean) -> Unit,
     onSetTunnelingEnabled: (Boolean) -> Unit,
-    onSetForceOpticalPassthrough: (Boolean) -> Unit,
+    onSetCenterChannelGainDb: (Int) -> Unit,
     onSetAllowAc3Passthrough: (Boolean) -> Unit,
     onSetAllowEac3Passthrough: (Boolean) -> Unit,
     onSetAllowTrueHdPassthrough: (Boolean) -> Unit,
@@ -273,13 +273,17 @@ internal fun LazyListScope.trailerAndAudioSettingsItems(
         }
 
         if (isExoEngine || isMpvEngine) {
-            item(key = "audio_force_optical_passthrough") {
-                ToggleSettingsItem(
+            item(key = "audio_center_channel_gain") {
+                SliderSettingsItem(
                     icon = Icons.Default.VolumeUp,
-                    title = stringResource(R.string.audio_force_optical_passthrough),
-                    subtitle = stringResource(R.string.audio_force_optical_passthrough_sub),
-                    isChecked = playerSettings.forceOpticalPassthrough && playerSettings.decoderPriority != 0,
-                    onCheckedChange = onSetForceOpticalPassthrough,
+                    title = stringResource(R.string.audio_center_channel_gain),
+                    subtitle = stringResource(R.string.audio_center_channel_gain_sub),
+                    value = playerSettings.centerChannelGainDb,
+                    valueText = stringResource(R.string.audio_center_channel_gain_value_db, playerSettings.centerChannelGainDb),
+                    minValue = 0,
+                    maxValue = 6,
+                    step = 1,
+                    onValueChange = onSetCenterChannelGainDb,
                     onFocused = onItemFocused,
                     enabled = enabled && playerSettings.decoderPriority != 0
                 )

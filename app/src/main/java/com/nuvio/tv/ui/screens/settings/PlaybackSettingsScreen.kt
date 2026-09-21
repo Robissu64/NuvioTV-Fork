@@ -306,7 +306,7 @@ fun PlaybackSettingsContent(
                     coroutineScope.launch { viewModel.setRememberAudioDelayPerDevice(enabled) }
                 },
                 onSetTunnelingEnabled = { enabled -> coroutineScope.launch { viewModel.setTunnelingEnabled(enabled) } },
-                onSetForceOpticalPassthrough = { enabled -> coroutineScope.launch { viewModel.setForceOpticalPassthrough(enabled) } },
+                onSetCenterChannelGainDb = { db -> coroutineScope.launch { viewModel.setCenterChannelGainDb(db) } },
                 onSetAllowAc3Passthrough = { allowed -> coroutineScope.launch { viewModel.setAllowAc3Passthrough(allowed) } },
                 onSetAllowEac3Passthrough = { allowed -> coroutineScope.launch { viewModel.setAllowEac3Passthrough(allowed) } },
                 onSetAllowTrueHdPassthrough = { allowed -> coroutineScope.launch { viewModel.setAllowTrueHdPassthrough(allowed) } },

@@ -122,6 +122,10 @@ class PlaybackSettingsViewModel @Inject constructor(
         playerSettingsDataStore.setTunnelingEnabled(enabled)
     }
 
+    suspend fun setCenterChannelGainDb(db: Int) {
+        playerSettingsDataStore.setCenterChannelGainDb(db)
+    }
+
     suspend fun setForceOpticalPassthrough(enabled: Boolean) {
         playerSettingsDataStore.setForceOpticalPassthrough(enabled)
     }
