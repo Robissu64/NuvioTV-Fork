@@ -555,7 +555,7 @@ int decodePacket(DecoderContext* decoderContext, AVPacket* packet,
       if (sourceCenter >= 0 && centerPlane &&
           nuvio_center::apply(&centerPlane, 1, 0, convertedSamples, centerGainDb) &&
           !decoderContext->center_gain_logged) {
-        LOGD("CENTER_TEST_V1_1: FC +4 dB, linear gain, no peak protection, AC3 5.1, index=%d", centerIndex);
+        LOGD("CENTER_TEST_V1_2: FC +%d dB, linear gain, no peak protection, AC3 5.1, index=%d", centerGainDb, centerIndex);
         decoderContext->center_gain_logged = true;
       }
       int fifoWritten = av_audio_fifo_write(decoderContext->fifo, (void**)converted_data, convertedSamples);
