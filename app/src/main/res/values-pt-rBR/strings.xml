@@ -1710,6 +1710,9 @@
     <string name="audio_center_mix_value_db">%1$d dB</string>
     <string name="audio_center_mix_help">Nível do canal central em dB em relação aos metadados ou padrão (-3 dB).</string>
     <string name="audio_center_mix_unavailable">O nível do canal central só está disponível quando a mixagem FFmpeg está ativa.</string>
+    <string name="audio_center_channel_gain">Ganho do canal central</string>
+    <string name="audio_center_channel_gain_value_db">+%1$d dB</string>
+    <string name="audio_center_channel_gain_sub">Aumenta o canal central real de 0 a +6 dB e recodifica o áudio surround em AC-3 5.1.</string>
     <string name="audio_maintain_original_audio_on_downmix_title">Manter volume original na mixagem</string>
     <string name="audio_maintain_original_audio_on_downmix_subtitle">Se desativado, a normalização da mixagem pode reduzir o volume geral do áudio.</string>
 
