@@ -1097,6 +1097,7 @@ internal fun PlayerRuntimeController.initializePlayer(
                 audioOutputChannels = effectiveAudioOutputChannels,
                 downmixNormalizationEnabled = !playerSettings.maintainOriginalAudioOnDownmix,
                 forceOpticalPassthrough = isForcePassthroughActive,
+                centerChannelGainDb = playerSettings.centerChannelGainDb,
                 deniedTranscodeMimes = deniedTranscodeMimes,
                 preferFfmpegAudio = preferFfmpegAudioActive,
                 matPassthroughEnabled = playerSettings.matPassthroughEnabled,
@@ -1113,6 +1114,7 @@ internal fun PlayerRuntimeController.initializePlayer(
                         audioOutputChannels = effectiveAudioOutputChannels,
                         downmixNormalizationEnabled = !playerSettings.maintainOriginalAudioOnDownmix,
                         forceOpticalPassthrough = isForcePassthroughActive,
+                        centerChannelGainDb = playerSettings.centerChannelGainDb,
                         deniedTranscodeMimes = deniedTranscodeMimes
                     )
                     applyCenterMixLevel(_uiState.value.centerMixLevelDb)
@@ -2697,6 +2699,7 @@ private class SubtitleOffsetRenderersFactory(
     private val audioOutputChannels: com.nuvio.tv.data.local.AudioOutputChannels,
     private val downmixNormalizationEnabled: Boolean,
     private val forceOpticalPassthrough: Boolean,
+    private val centerChannelGainDb: Int,
     private val deniedTranscodeMimes: Set<String>,
     private val preferFfmpegAudio: Boolean,
     private val matPassthroughEnabled: Boolean,
@@ -2951,6 +2954,7 @@ private class SubtitleOffsetRenderersFactory(
                 audioOutputChannels = audioOutputChannels,
                 downmixNormalizationEnabled = downmixNormalizationEnabled,
                 forceOpticalPassthrough = forceOpticalPassthrough,
+                centerChannelGainDb = centerChannelGainDb,
                 deniedTranscodeMimes = deniedTranscodeMimes
             )
         }
@@ -2962,9 +2966,11 @@ private fun FfmpegAudioRenderer.applyDownmixSettings(
     audioOutputChannels: com.nuvio.tv.data.local.AudioOutputChannels,
     downmixNormalizationEnabled: Boolean,
     forceOpticalPassthrough: Boolean,
+    centerChannelGainDb: Int,
     deniedTranscodeMimes: Set<String>
 ) {
     setForceOpticalPassthrough(forceOpticalPassthrough)
+    setCenterChannelGainDb(centerChannelGainDb)
     setDeniedTranscodeMimes(deniedTranscodeMimes)
     if (downmixEnabled) {
         setAudioOutputChannels(

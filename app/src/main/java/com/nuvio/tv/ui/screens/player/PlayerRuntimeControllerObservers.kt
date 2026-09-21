@@ -420,6 +420,13 @@ internal fun PlayerRuntimeController.observeSubtitleSettings() {
             if (resolvedCenterMixLevelDb != currentState.centerMixLevelDb) {
                 applyCenterMixLevel(resolvedCenterMixLevelDb)
             }
+            // V1.2: when the active decoder is already on the AC-3 route, make
+            // centre gain changes audible immediately. A new playback still
+            // rebuilds the complete route/capabilities when switching from 0.
+            ffmpegAudioRenderer?.setCenterChannelGainDb(settings.centerChannelGainDb)
+            ffmpegAudioRenderer?.setForceOpticalPassthrough(
+                settings.forceOpticalPassthrough && settings.decoderPriority != 0
+            )
 
             if (settings.rememberAudioDelayPerDevice && !wasRememberingAudioDelayPerDevice) {
                 applyStoredAudioDelayForCurrentRouteIfEnabled()
