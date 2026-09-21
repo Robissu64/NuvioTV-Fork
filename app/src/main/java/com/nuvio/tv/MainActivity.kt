@@ -3,6 +3,7 @@ package com.nuvio.tv
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -294,6 +295,7 @@ open class MainActivity : ComponentActivity() {
 
     private val pendingDeepLinkUrl = MutableStateFlow<String?>(null)
     private val pendingLaunchIntent = MutableStateFlow<Intent?>(null)
+    private val pendingExternalVideoUri = MutableStateFlow<Uri?>(null)
 
     private lateinit var jankStats: JankStats
 
@@ -381,6 +383,7 @@ open class MainActivity : ComponentActivity() {
         val launchSeason = intent?.getIntExtra("season", -1)?.takeIf { it >= 0 }
         val launchEpisode = intent?.getIntExtra("episode", -1)?.takeIf { it >= 0 }
         val launchEpisodeTitle = intent?.getStringExtra("episodeTitle")
+        captureExternalVideoIntent(intent)
         captureDeepLinkIntent(intent)
 
         setContent {
@@ -850,6 +853,26 @@ open class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    val pendingExternalVideo by pendingExternalVideoUri.collectAsState()
+                    LaunchedEffect(navController, layoutChosen, pendingExternalVideo) {
+                        val uri = pendingExternalVideo ?: return@LaunchedEffect
+                        if (!layoutChosen) return@LaunchedEffect
+                        pendingExternalVideoUri.value = null
+                        val title = Uri.decode(uri.lastPathSegment.orEmpty())
+                            .substringAfterLast('/')
+                            .ifBlank { "Vídeo externo" }
+                        navController.navigate(
+                            Screen.Player.createRoute(
+                                streamUrl = uri.toString(),
+                                title = title,
+                                filename = title,
+                                returnToHomeOnBack = true
+                            )
+                        ) {
+                            launchSingleTop = true
+                        }
+                    }
+
                     LaunchedEffect(navController, layoutChosen, pendingDeepLink) {
                         val url = pendingDeepLink ?: return@LaunchedEffect
                         if (!layoutChosen) return@LaunchedEffect
@@ -1103,11 +1126,28 @@ open class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        captureExternalVideoIntent(intent)
         captureDeepLinkIntent(intent)
         captureLaunchIntent(intent)
     }
 
+    private fun captureExternalVideoIntent(intent: Intent?) {
+        if (intent?.action != Intent.ACTION_VIEW) return
+        val uri = intent.data ?: return
+        if (uri.scheme !in setOf("content", "file")) return
+        if (intent.type?.startsWith("video/") != true) return
+        if (uri.scheme == "content") {
+            val readGranted = intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
+            val persistableGranted = intent.flags and Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            if (readGranted != 0 && persistableGranted != 0) {
+                runCatching { contentResolver.takePersistableUriPermission(uri, readGranted) }
+            }
+        }
+        pendingExternalVideoUri.value = uri
+    }
+
     private fun captureDeepLinkIntent(intent: Intent?) {
+        if (intent?.data?.scheme in setOf("content", "file")) return
         val url = intent?.dataString?.trim()?.takeIf(String::isNotBlank) ?: return
         pendingDeepLinkUrl.value = url
     }
