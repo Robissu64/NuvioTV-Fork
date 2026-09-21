@@ -64,6 +64,7 @@ public final class FfmpegAudioRenderer extends DecoderAudioRenderer<FfmpegAudioD
   private volatile boolean rendererEnabled;
   private volatile boolean downmixActive;
   private volatile boolean forceOpticalPassthrough;
+  private volatile int centerChannelGainDb;
   private volatile Set<String> deniedTranscodeMimes = Collections.emptySet();
 
   public FfmpegAudioRenderer() {
@@ -207,7 +208,7 @@ public final class FfmpegAudioRenderer extends DecoderAudioRenderer<FfmpegAudioD
             outputLayoutName,
             outputEncoding);
     decoder.setUserCenterMixLevelDb(userCenterMixLevelDb);
-    decoder.setCenterGainEnabled(transcodeToAc3 && forceOpticalPassthrough);
+    decoder.setCenterGainDb(transcodeToAc3 && forceOpticalPassthrough ? centerChannelGainDb : 0);
     decoder.setDownmixNormalizationEnabled(downmixNormalizationEnabled);
     activeDecoder = decoder;
     TraceUtil.endSection();
@@ -260,7 +261,14 @@ public final class FfmpegAudioRenderer extends DecoderAudioRenderer<FfmpegAudioD
   public void setForceOpticalPassthrough(boolean enabled) {
     this.forceOpticalPassthrough = enabled;
     @Nullable FfmpegAudioDecoder decoder = activeDecoder;
-    if (decoder != null) decoder.setCenterGainEnabled(enabled);
+    if (decoder != null) decoder.setCenterGainDb(enabled ? centerChannelGainDb : 0);
+  }
+
+  /** Sets the real centre-channel gain used while this renderer transcodes to AC-3. */
+  public void setCenterChannelGainDb(int db) {
+    centerChannelGainDb = Math.max(0, Math.min(6, db));
+    @Nullable FfmpegAudioDecoder decoder = activeDecoder;
+    if (decoder != null) decoder.setCenterGainDb(forceOpticalPassthrough ? centerChannelGainDb : 0);
   }
 
   // The app calls this API; the source module previously lagged behind its AAR.

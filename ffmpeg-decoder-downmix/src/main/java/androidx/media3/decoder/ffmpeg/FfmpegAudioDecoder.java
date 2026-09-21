@@ -209,9 +209,9 @@ import java.util.List;
     return outputEncoding;
   }
 
-  /** Center Test V1: fixed real FC gain, separate from center-mix coefficients. */
-  public void setCenterGainEnabled(boolean enabled) {
-    centerGainDb = enabled && outputEncoding == C.ENCODING_AC3 ? 4 : 0;
+  /** Sets the real FC gain for the AC-3 transcode path, separate from downmix coefficients. */
+  public void setCenterGainDb(int db) {
+    centerGainDb = outputEncoding == C.ENCODING_AC3 ? Math.max(0, Math.min(6, db)) : 0;
   }
 
   /** Sets the center-mix offset in dB relative to stream metadata or the default (-3 dB). */
