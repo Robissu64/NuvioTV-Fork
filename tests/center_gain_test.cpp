@@ -6,7 +6,8 @@
 #include <limits>
 
 int main() {
-  const float gain = std::pow(10.0f, 4.0f / 20.0f);
+  const float gain4 = std::pow(10.0f, 4.0f / 20.0f);
+  const float gain6 = std::pow(10.0f, 6.0f / 20.0f);
   // Test a center at every position: the algorithm must not assume index 2.
   for (int count : {3, 6, 8}) {
     for (int fc = 0; fc < count; ++fc) {
@@ -23,7 +24,7 @@ int main() {
       assert(nuvio_center::apply(planes, count, fc, 8, 4));
       for (int c = 0; c < count; ++c) {
         for (int s = 0; s < 8; ++s) {
-          if (c == fc) assert(std::fabs(audio[c][s] - original[c][s] * gain) < 1e-6f);
+          if (c == fc) assert(std::fabs(audio[c][s] - original[c][s] * gain4) < 1e-6f);
           else assert(audio[c][s] == original[c][s]);
         }
       }
@@ -37,11 +38,11 @@ int main() {
   assert(!nuvio_center::apply(plane, 1, 1, 8, 4));
   assert(!nuvio_center::apply(plane, 1, 0, 0, 4));
   assert(!nuvio_center::apply(plane, 1, 0, 8, -1));
-  assert(nuvio_center::apply(plane, 1, 0, 8, 30)); // clamped to +4
+  assert(nuvio_center::apply(plane, 1, 0, 8, 30)); // clamped to +6
   for (float value : edge) assert(std::isfinite(value));
-  assert(std::fabs(edge[1] - 0.8f * gain) < 1e-6f);
-  assert(std::fabs(edge[3] - gain) < 1e-6f);
-  assert(std::fabs(edge[5] - 50.0f * gain) < 1e-4f);
+  assert(std::fabs(edge[1] - 0.8f * gain6) < 1e-6f);
+  assert(std::fabs(edge[3] - gain6) < 1e-6f);
+  assert(std::fabs(edge[5] - 50.0f * gain6) < 1e-4f);
   assert(edge[1] > 1.0f); // No limiter, even above full scale.
   assert(edge[0] == 0.0f && edge[6] == 0.0f && edge[7] == 0.0f);
   assert(std::fabs(edge[1] + edge[2]) < 1e-6f);
@@ -52,8 +53,8 @@ int main() {
     float samples[] = {input, -input};
     float* channels[] = {samples};
     assert(nuvio_center::apply(channels, 1, 0, 2, 4));
-    assert(std::fabs(samples[0] - input * gain) < 1e-6f);
+    assert(std::fabs(samples[0] - input * gain4) < 1e-6f);
     assert(samples[0] == -samples[1]);
   }
-  std::cout << "PASS: linear +4 dB including peaks; non-FC unchanged; bypass; channel positions; invalid input\n";
+  std::cout << "PASS: linear 0..+6 dB including peaks; non-FC unchanged; bypass; channel positions; invalid input\n";
 }
