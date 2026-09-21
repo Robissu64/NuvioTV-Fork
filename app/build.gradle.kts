@@ -76,6 +76,9 @@ val useLocalFfmpegDecoder = truthy(
         ?: env("USE_LOCAL_FFMPEG_DECODER")
         ?: localProperties.getProperty("USE_LOCAL_FFMPEG_DECODER")
 )
+check(useLocalFfmpegDecoder) {
+    "Center Test requires -PuseLocalFfmpegDecoder=true and rebuilt native FFmpeg. See CENTER-TEST-LEIA-ME.md."
+}
 val releaseStoreFilePath = env("NUVIO_RELEASE_STORE_FILE")
     ?: localProperties.getProperty("NUVIO_RELEASE_STORE_FILE")
 val releaseKeyAliasValue = env("NUVIO_RELEASE_KEY_ALIAS")
@@ -91,11 +94,12 @@ android {
     ndkVersion = "29.0.14206865"
 
     defaultConfig {
-        applicationId = "com.nuvio.tv.test"
+        applicationId = "com.nuvio.tv.center"
         minSdk = 24
         targetSdk = 36
         versionCode = 1360
-        versionName = "0.9.0-beta-nt1"
+        versionName = "0.9.0-center-v1"
+        resValue("string", "center_test_app_name", "Nuvio Center Test")
 
         buildConfigField("String", "PARENTAL_GUIDE_API_URL", "\"${localProperties.getProperty("PARENTAL_GUIDE_API_URL", "")}\"")
         buildConfigField("String", "INTRODB_API_URL", "\"${localProperties.getProperty("INTRODB_API_URL", "")}\"")

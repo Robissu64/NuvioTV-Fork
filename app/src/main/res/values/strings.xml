@@ -795,8 +795,8 @@
     <string name="audio_enable_downmix_subtitle">Downmixes audio the app decodes to the selected channel count. Formats your receiver accepts still bitstream untouched. Not available with the Device only decoder setting.</string>
     <string name="audio_tunneled">Tunneled Playback</string>
     <string name="audio_tunneled_sub">Hardware-level audio/video sync. May improve playback on some Android TV devices</string>
-    <string name="audio_force_optical_passthrough">Force AC-3 Transcoding (Optical/SPDIF)</string>
-    <string name="audio_force_optical_passthrough_sub">Transcodes multichannel formats (TrueHD, DTS, AAC, etc.) to Dolby Digital 5.1 in real-time for Optical/SPDIF connections.</string>
+    <string name="audio_force_optical_passthrough">Center Test: +4 dB / AC-3 5.1</string>
+    <string name="audio_force_optical_passthrough_sub">Experimental. Boosts the real center before AC-3 encoding, including AC-3 sources. Soft peak protection on center only. Reopen playback after changing. Not the downmix Center Mix control.</string>
     <string name="audio_mat_passthrough">TrueHD MAT passthrough (experimental)</string>
     <string name="audio_mat_passthrough_sub">Packs TrueHD into MAT/IEC61937 in-app (Kodi-style), bypassing the vendor decode path. Requires a receiver that decodes Dolby MAT.</string>
     <!--

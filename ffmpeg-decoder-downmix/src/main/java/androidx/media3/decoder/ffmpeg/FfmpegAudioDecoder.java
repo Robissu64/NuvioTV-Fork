@@ -56,6 +56,7 @@ import java.util.List;
   @Nullable private final byte[] extraData;
   private final @C.PcmEncoding int outputEncoding;
   private volatile int userCenterMixLevelDb;
+  private volatile int centerGainDb;
   private volatile boolean downmixNormalizationEnabled;
   private int outputBufferSize;
 
@@ -142,7 +143,8 @@ import java.util.List;
             outputData,
             outputBufferSize,
             userCenterMixLevelDb,
-            downmixNormalizationEnabled);
+            downmixNormalizationEnabled,
+            centerGainDb);
     if (result == AUDIO_DECODER_ERROR_OTHER) {
       return new FfmpegDecoderException("Error decoding (see logcat).");
     } else if (result == AUDIO_DECODER_ERROR_INVALID_DATA) {
@@ -205,6 +207,11 @@ import java.util.List;
   /** Returns the encoding of output audio. */
   public @C.PcmEncoding int getEncoding() {
     return outputEncoding;
+  }
+
+  /** Center Test V1: fixed real FC gain, separate from center-mix coefficients. */
+  public void setCenterGainEnabled(boolean enabled) {
+    centerGainDb = enabled && outputEncoding == C.ENCODING_AC3 ? 4 : 0;
   }
 
   /** Sets the center-mix offset in dB relative to stream metadata or the default (-3 dB). */
@@ -348,7 +355,8 @@ import java.util.List;
       ByteBuffer outputData,
       int outputSize,
       int userCenterMixLevelDb,
-      boolean downmixNormalizationEnabled);
+      boolean downmixNormalizationEnabled,
+      int centerGainDb);
 
   private native int ffmpegGetChannelCount(long context);
 

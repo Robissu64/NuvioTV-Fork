@@ -26,6 +26,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include "center_gain.h"
 
 extern "C" {
 #ifdef __cplusplus
@@ -111,6 +112,7 @@ struct DecoderContext {
   AVFrame* encoder_frame;
   AVPacket* encoder_packet;
   bool encoder_initialized;
+  bool center_gain_logged;
 };
 
 static jmethodID growOutputBufferMethod;
@@ -148,6 +150,7 @@ int decodePacket(DecoderContext* decoderContext, AVPacket* packet,
                  uint8_t* outputBuffer, int outputSize,
                  jint userCenterMixLevelDb,
                  jboolean downmixNormalizationEnabled,
+                 jint centerGainDb,
                  GrowOutputBufferCallback growBuffer);
 
 /**
@@ -263,7 +266,8 @@ AUDIO_DECODER_FUNC(jint, ffmpegDecode, jlong context, jobject inputData,
                    jint inputSize, jobject decoderOutputBuffer,
                    jobject outputData, jint outputSize,
                    jint userCenterMixLevelDb,
-                   jboolean downmixNormalizationEnabled) {
+                   jboolean downmixNormalizationEnabled,
+                   jint centerGainDb) {
   if (!context) {
     LOGE("Context must be non-NULL.");
     return -1;
@@ -293,6 +297,7 @@ AUDIO_DECODER_FUNC(jint, ffmpegDecode, jlong context, jobject inputData,
       decodePacket((DecoderContext*)context, packet, outputBuffer, outputSize,
                    userCenterMixLevelDb,
                    downmixNormalizationEnabled,
+                   centerGainDb,
                    GrowOutputBufferCallback{env, thiz, decoderOutputBuffer});
   av_packet_free(&packet);
   return ret;
@@ -456,6 +461,7 @@ int decodePacket(DecoderContext* decoderContext, AVPacket* packet,
                  uint8_t* outputBuffer, int outputSize,
                  jint userCenterMixLevelDb,
                  jboolean downmixNormalizationEnabled,
+                 jint centerGainDb,
                  GrowOutputBufferCallback growBuffer) {
   AVCodecContext* codecContext = decoderContext->codec_context;
   int result = avcodec_send_packet(codecContext, packet);
@@ -482,7 +488,8 @@ int decodePacket(DecoderContext* decoderContext, AVPacket* packet,
     }
 
     result =
-        configureResampler(decoderContext, frame, userCenterMixLevelDb,
+        configureResampler(decoderContext, frame,
+                           decoderContext->transcode_to_ac3 ? 0 : userCenterMixLevelDb,
                            downmixNormalizationEnabled);
     if (result < 0) {
       av_frame_free(&frame);
@@ -495,8 +502,18 @@ int decodePacket(DecoderContext* decoderContext, AVPacket* packet,
       int outSamples = swr_get_out_samples(decoderContext->resample_context, frame->nb_samples);
       int nb_channels = decoderContext->output_layout.nb_channels;
       uint8_t** converted_data = (uint8_t**)calloc(nb_channels, sizeof(uint8_t*));
+      if (!converted_data) {
+        av_frame_free(&frame);
+        return AUDIO_DECODER_ERROR_OTHER;
+      }
       for (int i = 0; i < nb_channels; i++) {
         converted_data[i] = (uint8_t*)malloc(outSamples * sizeof(float));
+        if (!converted_data[i]) {
+          for (int j = 0; j < i; ++j) free(converted_data[j]);
+          free(converted_data);
+          av_frame_free(&frame);
+          return AUDIO_DECODER_ERROR_OTHER;
+        }
       }
 
       int convertedSamples =
@@ -513,14 +530,36 @@ int decodePacket(DecoderContext* decoderContext, AVPacket* packet,
         return AUDIO_DECODER_ERROR_INVALID_DATA;
       }
 
-      av_audio_fifo_write(decoderContext->fifo, (void**)converted_data, convertedSamples);
+      // Look up FC by layout, never assume that channel index 2 is the center.
+      // Do not boost a synthesized center for stereo/unknown inputs without FC.
+      const int sourceCenter = av_channel_layout_index_from_channel(
+          &decoderContext->input_layout, AV_CHAN_FRONT_CENTER);
+      const int centerIndex = av_channel_layout_index_from_channel(
+          &decoderContext->output_layout, AV_CHAN_FRONT_CENTER);
+      float* centerPlane = centerIndex >= 0
+          ? reinterpret_cast<float*>(converted_data[centerIndex]) : nullptr;
+      if (sourceCenter >= 0 && centerPlane &&
+          nuvio_center::apply(&centerPlane, 1, 0, convertedSamples, centerGainDb) &&
+          !decoderContext->center_gain_logged) {
+        LOGD("CENTER_TEST_V1: FC +4 dB, soft peak protection, AC3 5.1, index=%d", centerIndex);
+        decoderContext->center_gain_logged = true;
+      }
+      int fifoWritten = av_audio_fifo_write(decoderContext->fifo, (void**)converted_data, convertedSamples);
 
       for (int i = 0; i < nb_channels; i++) {
         free(converted_data[i]);
       }
       free(converted_data);
 
+      if (fifoWritten != convertedSamples) {
+        LOGE("AC3 FIFO write failed or was incomplete.");
+        return AUDIO_DECODER_ERROR_OTHER;
+      }
+
       while (av_audio_fifo_size(decoderContext->fifo) >= decoderContext->encoder_context->frame_size) {
+        if (av_frame_make_writable(decoderContext->encoder_frame) < 0) {
+          return AUDIO_DECODER_ERROR_OTHER;
+        }
         av_audio_fifo_read(decoderContext->fifo, (void**)decoderContext->encoder_frame->data,
                             decoderContext->encoder_context->frame_size);
 

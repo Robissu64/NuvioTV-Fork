@@ -2125,7 +2125,8 @@ internal fun PlayerRuntimeController.initializePlayer(
                         val sinkPath = if (
                             audioTrackConfig.encoding == C.ENCODING_AC3 &&
                             sourceMime != null &&
-                            sourceMime != MimeTypes.AUDIO_AC3
+                            (sourceMime != MimeTypes.AUDIO_AC3 ||
+                                ffmpegAudioRenderer?.isAc3TranscodeActive() == true)
                         ) {
                             "AC-3 transcode"
                         } else {

@@ -18,6 +18,9 @@ fun localPath(name: String): String? {
 
 val ffmpegSourceDir = localPath("FFMPEG_SOURCE_DIR")
 val ffmpegBuildDir = localPath("FFMPEG_BUILD_DIR")
+check(!ffmpegSourceDir.isNullOrBlank() && !ffmpegBuildDir.isNullOrBlank()) {
+    "Center Test requires FFMPEG_SOURCE_DIR and FFMPEG_BUILD_DIR. Do not use the original prebuilt decoder."
+}
 
 android {
     namespace = "androidx.media3.decoder.ffmpeg"
@@ -26,6 +29,7 @@ android {
 
     defaultConfig {
         minSdk = 24
+        ndk { abiFilters += listOf("armeabi-v7a", "arm64-v8a") }
 
         externalNativeBuild {
             cmake {

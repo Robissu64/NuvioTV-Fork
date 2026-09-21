@@ -745,8 +745,8 @@
     <string name="audio_enable_downmix_subtitle">Usa o caminho de downmix do FFmpeg. Requer a opção “Preferir decodificadores do app (FFmpeg)”. Quando desativado, o áudio segue o caminho anterior do Android/dispositivo.</string>
     <string name="audio_tunneled">Reprodução tunneled</string>
     <string name="audio_tunneled_sub">Melhora a sincronização de áudio e vídeo usando o hardware.</string>
-    <string name="audio_force_optical_passthrough">Forçar transcodificação AC-3 (Óptico/SPDIF)</string>
-    <string name="audio_force_optical_passthrough_sub">Transcodifica formatos multicanal (TrueHD, DTS, AAC, etc.) para Dolby Digital 5.1 em tempo real para conexões Óptico/SPDIF.</string>
+    <string name="audio_force_optical_passthrough">Teste da central: +4 dB / AC-3 5.1</string>
+    <string name="audio_force_optical_passthrough_sub">Experimental. Aumenta a central antes de codificar em AC-3, inclusive fontes AC-3. Proteção suave de picos só na central. Reabra o filme após alterar. Não é o controle de mixagem.</string>
     <!-- DV7 Handling Mode -->
     <string name="dv7_handling_title">Gerenciamento de Dolby Vision</string>
     <string name="dv7_handling_dialog_subtitle">Escolha como os streams de DV são processados durante a reprodução.</string>
