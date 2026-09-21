@@ -746,7 +746,7 @@
     <string name="audio_tunneled">Reprodução tunneled</string>
     <string name="audio_tunneled_sub">Melhora a sincronização de áudio e vídeo usando o hardware.</string>
     <string name="audio_force_optical_passthrough">Teste da central: +4 dB / AC-3 5.1</string>
-    <string name="audio_force_optical_passthrough_sub">Experimental. Aumenta a central antes de codificar em AC-3, inclusive fontes AC-3. Proteção suave de picos só na central. Reabra o filme após alterar. Não é o controle de mixagem.</string>
+    <string name="audio_force_optical_passthrough_sub">V1.1. Ganho linear na central, sem limitador. Compressão dinâmica do decodificador AC-3/E-AC-3 desativada na conversão. Picos fortes da central podem distorcer. Reabra o filme após alterar.</string>
     <!-- DV7 Handling Mode -->
     <string name="dv7_handling_title">Gerenciamento de Dolby Vision</string>
     <string name="dv7_handling_dialog_subtitle">Escolha como os streams de DV são processados durante a reprodução.</string>

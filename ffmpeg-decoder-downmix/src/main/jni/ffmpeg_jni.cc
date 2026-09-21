@@ -448,6 +448,20 @@ DecoderContext* createContext(JNIEnv* env, const AVCodec* codec,
     av_channel_layout_default(&codecContext->ch_layout, rawChannelCount);
   }
   codecContext->err_recognition = AV_EF_IGNORE_ERR;
+  // Preserve source dynamics when decoding Dolby audio for AC-3 transcoding.
+  // FFmpeg defaults drc_scale to 1, applying stream DRC across channels.
+  if (transcodeToAc3 &&
+      (codecContext->codec_id == AV_CODEC_ID_AC3 ||
+       codecContext->codec_id == AV_CODEC_ID_EAC3)) {
+    const int drcResult = av_opt_set_double(
+        codecContext->priv_data, "drc_scale", 0.0, 0);
+    if (drcResult < 0) {
+      logError("Disable AC3/EAC3 DRC", drcResult);
+      releaseContext(decoderContext);
+      return NULL;
+    }
+    LOGD("CENTER_TEST_V1_1: AC3/EAC3 decoder DRC disabled");
+  }
   int result = avcodec_open2(codecContext, codec, NULL);
   if (result < 0) {
     logError("avcodec_open2", result);
@@ -541,7 +555,7 @@ int decodePacket(DecoderContext* decoderContext, AVPacket* packet,
       if (sourceCenter >= 0 && centerPlane &&
           nuvio_center::apply(&centerPlane, 1, 0, convertedSamples, centerGainDb) &&
           !decoderContext->center_gain_logged) {
-        LOGD("CENTER_TEST_V1: FC +4 dB, soft peak protection, AC3 5.1, index=%d", centerIndex);
+        LOGD("CENTER_TEST_V1_1: FC +4 dB, linear gain, no peak protection, AC3 5.1, index=%d", centerIndex);
         decoderContext->center_gain_logged = true;
       }
       int fifoWritten = av_audio_fifo_write(decoderContext->fifo, (void**)converted_data, convertedSamples);

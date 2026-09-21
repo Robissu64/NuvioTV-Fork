@@ -15,7 +15,7 @@ int main() {
       float* planes[8];
       for (int c = 0; c < count; ++c) {
         planes[c] = audio[c];
-        for (int s = 0; s < 8; ++s) audio[c][s] = (s - 4) * 0.05f;
+        for (int s = 0; s < 8; ++s) audio[c][s] = (s - 4) * 0.25f;
       }
       std::memcpy(original, audio, sizeof(audio));
       assert(!nuvio_center::apply(planes, count, fc, 8, 0));
@@ -38,18 +38,22 @@ int main() {
   assert(!nuvio_center::apply(plane, 1, 0, 0, 4));
   assert(!nuvio_center::apply(plane, 1, 0, 8, -1));
   assert(nuvio_center::apply(plane, 1, 0, 8, 30)); // clamped to +4
-  for (float value : edge) assert(std::isfinite(value) && std::fabs(value) <= 0.980001f);
+  for (float value : edge) assert(std::isfinite(value));
+  assert(std::fabs(edge[1] - 0.8f * gain) < 1e-6f);
+  assert(std::fabs(edge[3] - gain) < 1e-6f);
+  assert(std::fabs(edge[5] - 50.0f * gain) < 1e-4f);
+  assert(edge[1] > 1.0f); // No limiter, even above full scale.
   assert(edge[0] == 0.0f && edge[6] == 0.0f && edge[7] == 0.0f);
   assert(std::fabs(edge[1] + edge[2]) < 1e-6f);
   assert(std::fabs(edge[3] + edge[4]) < 1e-6f);
-  // Continuous, odd, monotonic soft protection over an extensive amplitude sweep.
-  float last = 0.0f;
+  // Constant gain over the full amplitude range, without peak compression.
   for (int i = 0; i < 100000; ++i) {
     float input = i * 0.0001f;
-    float output = nuvio_center::protect(input);
-    assert(output >= last && output <= 0.980001f);
-    assert(std::fabs(output + nuvio_center::protect(-input)) < 1e-6f);
-    last = output;
+    float samples[] = {input, -input};
+    float* channels[] = {samples};
+    assert(nuvio_center::apply(channels, 1, 0, 2, 4));
+    assert(std::fabs(samples[0] - input * gain) < 1e-6f);
+    assert(samples[0] == -samples[1]);
   }
-  std::cout << "PASS: +4 dB; non-FC unchanged; bypass; channel positions; peak bounds; invalid input\n";
+  std::cout << "PASS: linear +4 dB including peaks; non-FC unchanged; bypass; channel positions; invalid input\n";
 }
