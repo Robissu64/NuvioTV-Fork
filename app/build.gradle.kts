@@ -98,7 +98,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 1360
-        versionName = "0.9.0-center-v1.1"
+        versionName = "0.9.0-center-v1.2"
         resValue("string", "center_test_app_name", "Nuvio Center Test")
 
         buildConfigField("String", "PARENTAL_GUIDE_API_URL", "\"${localProperties.getProperty("PARENTAL_GUIDE_API_URL", "")}\"")
