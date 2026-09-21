@@ -240,6 +240,9 @@ data class PlayerSettings(
     val audioOutputChannels: AudioOutputChannels = AudioOutputChannels.default,
     val maintainOriginalAudioOnDownmix: Boolean = true,
     val tunnelingEnabled: Boolean = false,
+    /** Real front-centre gain used by the Center Test AC-3 path (0 to +6 dB). */
+    val centerChannelGainDb: Int = 0,
+    // Retained as the storage flag used by the V1.1 migration and AC-3 routing.
     val forceOpticalPassthrough: Boolean = false,
     // Per-format passthrough overrides. True (the default) delegates to the
     // platform's capability report exactly as before; false denies passthrough for
@@ -562,6 +565,8 @@ class PlayerSettingsDataStore @Inject constructor(
         private const val AUDIO_AMPLIFICATION_DB_MAX = 10
         private const val CENTER_MIX_LEVEL_DB_MIN = -10
         private const val CENTER_MIX_LEVEL_DB_MAX = 30
+        private const val CENTER_CHANNEL_GAIN_DB_MIN = 0
+        private const val CENTER_CHANNEL_GAIN_DB_MAX = 6
     }
 
     private fun store(profileId: Int = profileManager.activeProfileId.value) =
@@ -583,6 +588,7 @@ class PlayerSettingsDataStore @Inject constructor(
     private val downmixNormalizationEnabledLegacyKey =
         booleanPreferencesKey("downmix_normalization_enabled")
     private val tunnelingEnabledKey = booleanPreferencesKey("tunneling_enabled")
+    private val centerChannelGainDbKey = intPreferencesKey("center_channel_gain_db")
     private val forceOpticalPassthroughKey = booleanPreferencesKey("force_optical_passthrough")
     private val allowAc3PassthroughKey = booleanPreferencesKey("allow_ac3_passthrough")
     private val allowEac3PassthroughKey = booleanPreferencesKey("allow_eac3_passthrough")
@@ -958,6 +964,13 @@ class PlayerSettingsDataStore @Inject constructor(
                     prefs[maintainOriginalAudioOnDownmixKey]
                         ?: !(prefs[downmixNormalizationEnabledLegacyKey] ?: false),
                 tunnelingEnabled = prefs[tunnelingEnabledKey] ?: false,
+                // V1.1 used only force_optical_passthrough and always applied +4 dB.
+                // If this new key is absent, preserve that exact behaviour on upgrade.
+                centerChannelGainDb = (prefs[centerChannelGainDbKey]
+                    ?: if (prefs[forceOpticalPassthroughKey] ?: false) 4 else 0).coerceIn(
+                    CENTER_CHANNEL_GAIN_DB_MIN,
+                    CENTER_CHANNEL_GAIN_DB_MAX
+                ),
                 forceOpticalPassthrough = prefs[forceOpticalPassthroughKey] ?: false,
                 allowAc3Passthrough = prefs[allowAc3PassthroughKey] ?: true,
                 allowEac3Passthrough = prefs[allowEac3PassthroughKey] ?: true,
@@ -1217,6 +1230,21 @@ class PlayerSettingsDataStore @Inject constructor(
     suspend fun setForceOpticalPassthrough(enabled: Boolean) {
         store().edit { prefs ->
             prefs[forceOpticalPassthroughKey] = enabled
+            // Compatibility for device assessments and older callers that still
+            // use the V1.1 boolean API.
+            prefs[centerChannelGainDbKey] = if (enabled) 4 else 0
+        }
+    }
+
+    /**
+     * Replaces the V1.1 on/off control.  A non-zero gain enables the AC-3 path;
+     * zero disables it.  Writing both keys also makes the V1.1 migration one-way.
+     */
+    suspend fun setCenterChannelGainDb(db: Int) {
+        val gain = db.coerceIn(CENTER_CHANNEL_GAIN_DB_MIN, CENTER_CHANNEL_GAIN_DB_MAX)
+        store().edit { prefs ->
+            prefs[centerChannelGainDbKey] = gain
+            prefs[forceOpticalPassthroughKey] = gain > 0
         }
     }
 
