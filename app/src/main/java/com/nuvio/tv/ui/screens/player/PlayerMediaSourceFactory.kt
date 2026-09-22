@@ -7,6 +7,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.SimpleCache
@@ -159,7 +160,8 @@ internal class PlayerMediaSourceFactory(private val context: Context) {
         val isDash = resolvedMimeType == MimeTypes.APPLICATION_MPD
         val mp4SessionMode = !useParallelConnections && !isHls && !isDash &&
             resolvedMimeType == MimeTypes.VIDEO_MP4
-        val useChunkSessionSource = (useParallelConnections || mp4SessionMode) && !isHls && !isDash
+        val isHttp = Uri.parse(url).scheme?.lowercase() in setOf("http", "https")
+        val useChunkSessionSource = isHttp && (useParallelConnections || mp4SessionMode) && !isHls && !isDash
         return ChunkSessionShape(
             resolvedMimeType = resolvedMimeType,
             isHls = isHls,
@@ -295,7 +297,7 @@ internal class PlayerMediaSourceFactory(private val context: Context) {
                 )
             }
         } else {
-            httpDataSourceFactory
+            DefaultDataSource.Factory(context, httpDataSourceFactory)
         }
 
         // 2. VOD disk cache (opt-in).
