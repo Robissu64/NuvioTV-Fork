@@ -1134,8 +1134,11 @@ open class MainActivity : ComponentActivity() {
     private fun captureExternalVideoIntent(intent: Intent?) {
         if (intent?.action != Intent.ACTION_VIEW) return
         val uri = intent.data ?: return
-        if (uri.scheme !in setOf("content", "file")) return
-        if (intent.type?.startsWith("video/") != true) return
+        if (uri.scheme !in setOf("content", "file", "http", "https")) return
+        val mimeType = intent.type?.lowercase()
+        if (mimeType?.startsWith("video/") != true &&
+            mimeType !in setOf("application/octet-stream", "application/x-matroska")
+        ) return
         if (uri.scheme == "content") {
             val readGranted = intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION
             val persistableGranted = intent.flags and Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
@@ -1147,7 +1150,11 @@ open class MainActivity : ComponentActivity() {
     }
 
     private fun captureDeepLinkIntent(intent: Intent?) {
-        if (intent?.data?.scheme in setOf("content", "file")) return
+        if (intent?.action == Intent.ACTION_VIEW &&
+            intent.data?.scheme in setOf("content", "file", "http", "https") &&
+            (intent.type?.startsWith("video/") == true ||
+                intent.type in setOf("application/octet-stream", "application/x-matroska"))
+        ) return
         val url = intent?.dataString?.trim()?.takeIf(String::isNotBlank) ?: return
         pendingDeepLinkUrl.value = url
     }
