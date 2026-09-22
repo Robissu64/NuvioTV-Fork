@@ -68,12 +68,22 @@
             android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|uiMode|keyboard|keyboardHidden|navigation|layoutDirection|fontScale|locale"
             android:theme="@style/Theme.MyApplication.Launcher">
-            <!-- Receive video files from file managers (e.g. CX Explorer). A MIME-only
-                 filter also accepts both content:// and file:// Android VIEW intents. -->
+            <!-- File managers may identify MKV and remote files as binary data. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="video/*" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/x-matroska" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:mimeType="video/*" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/x-matroska" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
