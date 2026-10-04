@@ -335,7 +335,9 @@ android {
 // Keep the existing workflow/task and artifact path intact. It builds the main
 // package first, then stages distinctly named unsigned test APKs for local signing.
 val stageNuvioTestApks = tasks.register<Copy>("stageNuvioTestApks") {
-    dependsOn("assembleFullTvTest")
+    // The main listing reads this shared directory before test files are added.
+    // Declare that order explicitly so Gradle validates the staging task's output.
+    dependsOn("assembleFullTvTest", "createFullDebugApkListingFileRedirect")
     from(layout.buildDirectory.dir("outputs/apk/full/tvTest")) {
         include("*.apk")
         rename { "Nuvio-Teste-CI-$it" }
