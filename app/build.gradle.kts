@@ -102,9 +102,9 @@ android {
         applicationId = "com.nuvio.tv.center"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1360
-        versionName = "0.9.0-center-v1.2"
-        resValue("string", "center_test_app_name", "Nuvio Center Test")
+        versionCode = 1361
+        versionName = "0.9.0-center-v1.3-local-subtitles"
+        resValue("string", "center_test_app_name", "Nuvio")
 
         buildConfigField("String", "PARENTAL_GUIDE_API_URL", "\"${localProperties.getProperty("PARENTAL_GUIDE_API_URL", "")}\"")
         buildConfigField("String", "INTRODB_API_URL", "\"${localProperties.getProperty("INTRODB_API_URL", "")}\"")

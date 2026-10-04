@@ -1,0 +1,51 @@
+# Handoff Nuvio — 04/10/2026
+
+## Etapa 1: auditoria concluída
+
+- Fork: https://github.com/Robissu64/NuvioTV-Fork, branch `nuvio-test`.
+- Base local e remota verificada: `ee327e3ef694020554f91239ad4ce5d337233def`.
+- Checkout inicialmente limpo; nenhum AGENTS.md encontrado no projeto.
+- ZIP antigo e APK oficial não estavam em Downloads. Implementação pendente será recriada.
+- Login QR e áudio aprovados na TV pelo usuário; não são validações feitas neste ambiente.
+- Fallback público do login presente em app/build.gradle.kts; preservá-lo.
+- applicationId `com.nuvio.tv.center`; versão base `1360 / 0.9.0-center-v1.2`.
+- Decoder FFmpeg local obrigatório, central 0–6 dB, migração de preferência legada para +4 dB presentes.
+- Abertura externa content/file/http/https e DefaultDataSource presentes. CX Explorer ainda exige teste na TV; não pressupor FTP direto.
+- `.github/workflows/build-center-test.yml` deve permanecer byte a byte intacto.
+
+## Trabalho em andamento
+
+Restaurar nome e sete recursos oficiais de launcher; implementar importação SRT/VTT/ASS/SSA com limite, charset, cancelamento e alternativa para Android TV sem seletor. Investigar busca online existente e requisitos atuais de provedores. Atualizar este arquivo a cada etapa.
+
+## Compilação
+
+JDK, Android SDK e gh não encontrados no PATH. Verificando credencial Git existente e possibilidade de executar o workflow autorizado. Não substituir o decoder por AAR original para contornar o build.
+
+
+## Etapa 2: nome, recursos e implementação local concluídos; validação Android em andamento
+
+- Nome Nuvio no launcher e em todas as strings app_name, incluindo debug; applicationId preservado.
+- Versão experimental: 1361 / 0.9.0-center-v1.3-local-subtitles.
+- APK oficial 1.0.0 baixado da release; SHA-256 conferido: b682c455ce3766bce9af250c7a408fe2b1e5b8e207db299854bcce003b9db9b1.
+- Sete PNGs extraídos com IDs da tabela resources.arsc. Proveniência e hashes em NUVIO_RECURSOS_OFICIAIS.json. Ícone e banner inspecionados visualmente. Atividades de tema alternativas preservadas; selecionar tema padrão para ver o recurso oficial.
+- Importação OpenDocument, fallback GetContent e envio pelo celular na mesma rede com QR temporário (10 minutos). Servidor inicia somente com o painel aberto e para ao fechar/sair/trocar mídia. Upload exige token aleatório e valida tamanho/formato antes de aplicar.
+- SRT/VTT/ASS/SSA: limite de 8 MiB durante leitura; detector de charset existente; cache UUID em UTF-8; idioma desconhecido (und), sem atribuir português indevidamente. Cache limitado e limpo ao finalizar o controller; resíduos antigos removidos após 24 horas na próxima sessão.
+- Legenda local permanece visível com filtro de idiomas e chegada posterior de addons. Caminhos sidecar/ExoPlayer/libass/MPV existentes reutilizados; extensão ASS/SSA mantida no cache MPV. Não se persiste URL temporária da legenda local; é necessário selecionar novamente após reabrir.
+- Seletor preserva pausa/reprodução anterior; cancelamento não troca legenda. Erro de importação não muda fonte de vídeo nem faixa ativa. Ganho, QR e identidade não foram modificados.
+- 42 testes JVM passaram: 8 novos de formatos/tamanho/encoding/cancelamento, 2 novos de HTTP/token/upload e 32 existentes do detector de charset. Execução isolada usa Kotlin/JDK17 + JUnit e as fontes reais, sem Android SDK. Compilação Android ainda precisa confirmar integração da interface.
+- Credencial do Git autenticada como Robissu64; autorizado enviar para nuvio-test e executar workflow existente. Não há JDK/SDK Android previamente configurados neste computador.
+- Diff de .github vazio até esta etapa.
+
+## Etapa 3: pesquisa online concluída; integração direta pendente de configuração
+
+O SubtitleRepositoryImpl já consulta addons habilitados que anunciem subtitles, usando tipo/ID e opcionalmente vídeo hash, tamanho e filename. Há timeout de 20 segundos por addon e resultados progressivos. O controller calcula hash com OpenSubtitlesHasher, porém a busca exige contentId/contentType: arquivo externo sem metadados não tem caminho de busca por consulta livre. Não reutilizar URL externa como se fosse um ID IMDb.
+
+OpenSubtitles.com é viável, mas sua documentação oficial requer API key de consumidor (criada em conta OpenSubtitles.com) e User-Agent de aplicação. Downloads têm cotas por IP/conta e podem exigir autenticação para ampliar o limite. Nenhuma chave própria foi fornecida; não se emprestou chave de terceiros e não se adicionou botão sem funcionalidade. A conta OpenSubtitles é independente do login Nuvio; não exige conta Supabase.
+
+Fontes verificadas em 04/10/2026:
+- https://opensubtitles.tawk.help/article/getting-started
+- https://opensubtitles.tawk.help/article/about-the-api
+- https://github.com/opensubtitles/vlsub-opensubtitles-com/blob/main/docs/languages.md (pt-br e pt-pt distintos; confirmar catálogo do endpoint da versão escolhida)
+- https://developer.android.com/training/data-storage/shared/documents-files
+
+Próxima implementação online: configuração de API key em armazenamento privado da instalação (sem logs/commits), autenticação opcional e quotas reportadas pelo serviço; busca editável por título/filename, parsing conservador de SxxExx e tags de release, PT-BR prioritário e seleção manual de resultados com fonte/release/idioma/hash. Usar ranges de início/fim para hash HTTP apenas quando o servidor realmente honrar Range; leitura seekable local quando viável. Validar e baixar pelo mesmo limite/pipeline local. Não baixar o filme inteiro para obter hash. Avaliar addons instalados para resolver metadados antes de duplicar a integração. Não há serviço online novo concluído nesta versão.

@@ -3,6 +3,7 @@ package com.nuvio.tv.ui.screens.player
 import com.nuvio.tv.R
 import com.nuvio.tv.domain.model.Subtitle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
@@ -209,6 +210,16 @@ internal suspend fun PlayerRuntimeController.downloadSubtitleBody(
     headers: Map<String, String>? = null
 ): String =
     withContext(Dispatchers.IO) {
+        val uri = android.net.Uri.parse(url)
+        if (uri.scheme in setOf("file", "content")) {
+            val jobContext = kotlin.coroutines.coroutineContext
+            val bytes = context.contentResolver.openInputStream(uri)?.use { input ->
+                com.nuvio.tv.core.player.LocalSubtitleFiles.readBounded(input) {
+                    jobContext.ensureActive()
+                }
+            } ?: error(context.getString(R.string.subtitle_download_empty_content))
+            return@withContext SubtitleCharsetDetector.decode(bytes, languageHint = languageHint)
+        }
         var lastError: Exception? = null
         repeat(SUBTITLE_DOWNLOAD_MAX_ATTEMPTS) { attempt ->
             try {

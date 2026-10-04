@@ -247,6 +247,16 @@ class PlayerRuntimeController(
     internal var currentStreamMimeType: String?
     internal var currentHeaders: Map<String, String>
     internal var streamSubtitles: List<Subtitle> = emptyList()
+    internal var localSubtitles: List<Subtitle> = emptyList()
+    internal var localSubtitleImportJob: Job? = null
+    internal var mpvAddonSubtitleSelectionJob: Job? = null
+    internal var localSubtitleMediaKey: String? = null
+    internal val localSubtitleCacheDir: java.io.File by lazy {
+        val root = java.io.File(context.cacheDir, "local_subtitles").also { it.mkdirs() }
+        root.listFiles()?.filter { System.currentTimeMillis() - it.lastModified() > 24 * 60 * 60_000L }
+            ?.forEach { it.deleteRecursively() }
+        java.io.File(root, java.util.UUID.randomUUID().toString()).also { it.mkdirs() }
+    }
 
     init {
         val initialPlaybackRequest = PlayerMediaSourceFactory.normalizePlaybackRequest(
@@ -268,6 +278,7 @@ class PlayerRuntimeController(
     fun getCurrentHeaders(): Map<String, String> = currentHeaders
 
     fun stopAndRelease() {
+        clearLocalSubtitleSelection()
         // nt33: the diagnostics record persists at FIRST FRAME, and on a mid-episode
         // back-out no later persist runs at all (BUFFER_SUMMARY absent across the
         // 8 Aug captures proves the natural-end path is skipped), so under AFR -
@@ -848,6 +859,8 @@ class PlayerRuntimeController(
     }
 
     fun onCleared() {
+        clearLocalSubtitleSelection()
+        localSubtitleCacheDir.deleteRecursively()
         releasePlayer()
         stopTorrentStream()
         startupLoadingReportJob?.cancel()

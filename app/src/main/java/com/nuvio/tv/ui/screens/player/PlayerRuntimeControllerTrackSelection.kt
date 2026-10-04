@@ -493,6 +493,8 @@ internal fun PlayerRuntimeController.toSubtitleConfiguration(subtitle: Subtitle)
 }
 
 internal fun PlayerRuntimeController.selectAddonSubtitle(subtitle: Subtitle) {
+    mpvAddonSubtitleSelectionJob?.cancel()
+    mpvAddonSubtitleSelectionJob = null
     // nt6: any actual selection supersedes a parked auto-restore.
     deferredAutoAddonSubtitle = null
     logSwitchTrace(
@@ -512,20 +514,26 @@ internal fun PlayerRuntimeController.selectAddonSubtitle(subtitle: Subtitle) {
         val wasPlaying = isPlaybackCurrentlyPlaying()
         val normalizedLang = PlayerSubtitleUtils.normalizeLanguageCode(subtitle.lang)
         val trackTitle = buildAddonSubtitleTrackId(subtitle)
-        scope.launch {
+        val streamAtSelection = currentStreamUrl
+        mpvAddonSubtitleSelectionJob = scope.launch {
             val localPath = try {
                 val decodedBody = downloadSubtitleBody(subtitle.url, subtitle.lang, subtitle.headers)
                 val sanitized = SubtitleMojibakeSanitizer.sanitize(decodedBody).toString()
                 val cacheDir = java.io.File(context.cacheDir, "subtitles").also { it.mkdirs() }
-                val ext = if (subtitle.url.contains(".vtt", ignoreCase = true)) "vtt" else "srt"
+                val ext = com.nuvio.tv.core.player.LocalSubtitleFiles.extension(
+                    android.net.Uri.parse(subtitle.url).lastPathSegment.orEmpty()
+                ) ?: "srt"
                 val file = java.io.File(cacheDir, "mpv_${subtitle.id.hashCode()}.$ext")
                 file.writeText(sanitized, Charsets.UTF_8)
                 file.absolutePath
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Log.w(PlayerRuntimeController.TAG, "Failed to cache normalized subtitle for MPV, falling back to URL", e)
                 subtitle.url
             }
 
+            if (currentStreamUrl != streamAtSelection || !isUsingMpvEngine()) return@launch
             val added = mpvView?.addAndSelectExternalSubtitle(
                 url = localPath,
                 title = trackTitle,
@@ -739,7 +747,9 @@ internal fun PlayerRuntimeController.persistTrackPreference() {
     // earlier audio/subtitle choices. See issue #1063.
     val pref = currentTrackPreferenceForPersistence()
     val audio = pref.audio
-    val subtitle = pref.subtitle
+    val subtitle = pref.subtitle.takeUnless {
+        it is PlayerRuntimeController.RememberedSubtitleSelection.Addon && it.id.startsWith("local:")
+    }
     val persisted = com.nuvio.tv.data.local.PersistedTrackPreference(
         subtitleType = when (subtitle) {
             is PlayerRuntimeController.RememberedSubtitleSelection.Internal -> "INTERNAL"

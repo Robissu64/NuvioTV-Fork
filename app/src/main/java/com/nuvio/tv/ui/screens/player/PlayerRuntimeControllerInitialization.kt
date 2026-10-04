@@ -2571,6 +2571,7 @@ internal suspend fun PlayerRuntimeController.prepareStartupSubtitles(): StartupS
 }
 
 internal fun PlayerRuntimeController.resetAddonSubtitleStateForNewStream() {
+    clearLocalSubtitlesForNewMedia()
     autoSubtitleSelected = subtitleDisabledByPersistedPreference || subtitleAddonRestoredByPersistedPreference
     isUserExplicitSubtitleSelection = false
     hasScannedTextTracksOnce = false

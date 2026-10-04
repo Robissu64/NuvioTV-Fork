@@ -152,7 +152,7 @@ internal fun PlayerRuntimeController.fetchAddonSubtitles() {
         try {
             val subtitles = fetchAddonSubtitlesNow(
                 onSubtitlesEmitted = { currentList ->
-                    _uiState.update { it.copy(addonSubtitles = currentList) }
+                    _uiState.update { it.copy(addonSubtitles = filterToVisibleAddonSubtitles(currentList)) }
                 }
             )
             val visibleSubtitles = filterToVisibleAddonSubtitles(subtitles)
@@ -231,7 +231,7 @@ internal fun PlayerRuntimeController.maybeAttachDeferredAddonSubtitle() {
 }
 
 private fun PlayerRuntimeController.publishStreamSidecarSubtitlesWithoutAddonFetch() {
-    if (streamSubtitles.isEmpty()) return
+    if (streamSubtitles.isEmpty() && localSubtitles.isEmpty()) return
     _uiState.update {
         it.copy(
             addonSubtitles = filterToVisibleAddonSubtitles(streamSubtitles),
@@ -243,6 +243,7 @@ private fun PlayerRuntimeController.publishStreamSidecarSubtitlesWithoutAddonFet
 }
 
 internal fun PlayerRuntimeController.refreshSubtitlesForCurrentEpisode() {
+    clearLocalSubtitleSelection()
     val keepDisabled = subtitleDisabledByPersistedPreference ||
         (rememberedTrackPreference?.subtitle == PlayerRuntimeController.RememberedSubtitleSelection.Disabled)
     if (!isUserExplicitSubtitleSelection && !keepDisabled) {
@@ -283,8 +284,9 @@ internal fun PlayerRuntimeController.withStreamSidecarSubtitles(addonSubtitles: 
 internal fun PlayerRuntimeController.filterToVisibleAddonSubtitles(
     subtitles: List<Subtitle>
 ): List<Subtitle> {
+    val all = (subtitles + localSubtitles).distinctBy { addonSubtitleKey(it) }
     val style = _uiState.value.subtitleStyle
-    if (!style.showOnlyPreferredLanguages) return subtitles
+    if (!style.showOnlyPreferredLanguages) return all
 
     val preferredTargets = when (PlayerSubtitleUtils.normalizeLanguageCode(style.preferredLanguage)) {
         "none" -> listOfNotNull(
@@ -310,14 +312,14 @@ internal fun PlayerRuntimeController.filterToVisibleAddonSubtitles(
             PlayerSubtitleUtils.normalizeLanguageCode(style.preferredLanguage) == "none" &&
             selectedAudioTrackForSubtitleMatching(_uiState.value) == null
         ) {
-            subtitles
+            all
         } else {
-            emptyList()
+            all.filter { it.isLocal }
         }
     }
 
-    return subtitles.filter { subtitle ->
-        preferredTargets.any { target ->
+    return all.filter { subtitle ->
+        subtitle.isLocal || preferredTargets.any { target ->
             PlayerSubtitleUtils.matchesLanguageCode(subtitle.lang, target)
         }
     }

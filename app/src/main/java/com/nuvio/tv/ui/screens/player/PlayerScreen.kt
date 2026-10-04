@@ -15,6 +15,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RawRes
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.saveable.rememberSaveable
+import android.content.ActivityNotFoundException
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -170,6 +174,46 @@ fun PlayerScreen(
     val effectiveAutoplayEnabled by viewModel.effectiveAutoplayEnabled.collectAsState(initial = false)
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+    var subtitlePickerOpen by rememberSaveable { mutableStateOf(false) }
+    var resumeAfterSubtitlePicker by rememberSaveable { mutableStateOf(false) }
+    var showSubtitleTransfer by remember(uiState.currentStreamUrl, uiState.currentVideoId) { mutableStateOf(false) }
+    val latestPlaying by rememberUpdatedState(uiState.isPlaying)
+    val resumeFromSubtitlePicker = {
+        subtitlePickerOpen = false
+        viewModel.onEvent(PlayerEvent.OnLocalSubtitlePickerClosed(resumeAfterSubtitlePicker))
+        resumeAfterSubtitlePicker = false
+    }
+    val getSubtitleContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        resumeFromSubtitlePicker()
+        uri?.let { viewModel.onEvent(PlayerEvent.OnSelectLocalSubtitle(it)) }
+    }
+    val openSubtitleDocument = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        resumeFromSubtitlePicker()
+        uri?.let { viewModel.onEvent(PlayerEvent.OnSelectLocalSubtitle(it)) }
+    }
+    val chooseLocalSubtitle = {
+        resumeAfterSubtitlePicker = latestPlaying
+        subtitlePickerOpen = true
+        try {
+            // File managers often mark subtitles as text/plain or binary; validate after opening.
+            openSubtitleDocument.launch(arrayOf("*/*"))
+        } catch (_: ActivityNotFoundException) {
+            try { getSubtitleContent.launch("*/*") }
+            catch (_: ActivityNotFoundException) {
+                subtitlePickerOpen = false
+                resumeAfterSubtitlePicker = false
+                showSubtitleTransfer = true
+            } catch (_: SecurityException) {
+                subtitlePickerOpen = false
+                resumeAfterSubtitlePicker = false
+                showSubtitleTransfer = true
+            }
+        } catch (_: SecurityException) {
+            subtitlePickerOpen = false
+            resumeAfterSubtitlePicker = false
+            showSubtitleTransfer = true
+        }
+    }
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val containerFocusRequester = remember { FocusRequester() }
     val playPauseFocusRequester = remember { FocusRequester() }
@@ -383,7 +427,7 @@ fun PlayerScreen(
     }
 
     // Handle lifecycle events
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(lifecycleOwner, subtitlePickerOpen) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_PAUSE -> {
@@ -1688,6 +1732,14 @@ fun PlayerScreen(
                 .zIndex(2.6f)
         )
 
+        if (showSubtitleTransfer) {
+            Box(modifier = Modifier.fillMaxSize().zIndex(8f)) {
+                LocalSubtitleTransferOverlay(
+                    onEvent = { viewModel.onEvent(it) },
+                    onClose = { showSubtitleTransfer = false }
+                )
+            }
+        }
         SubtitleSelectionOverlay(
             visible = uiState.showSubtitleOverlay,
             internalTracks = uiState.subtitleTracks,
@@ -1703,6 +1755,10 @@ fun PlayerScreen(
             onInternalTrackSelected = { viewModel.onEvent(PlayerEvent.OnSelectSubtitleTrack(it)) },
             onAddonSubtitleSelected = { viewModel.onEvent(PlayerEvent.OnSelectAddonSubtitle(it)) },
             onDisableSubtitles = { viewModel.onEvent(PlayerEvent.OnDisableSubtitles) },
+            onChooseLocalSubtitle = chooseLocalSubtitle,
+            onTransferLocalSubtitle = { showSubtitleTransfer = true },
+            isImportingLocalSubtitle = uiState.isImportingLocalSubtitle,
+            localSubtitleError = uiState.localSubtitleError,
             onEvent = { viewModel.onEvent(it) },
             onDismiss = { viewModel.onEvent(PlayerEvent.OnDismissTransientOverlay) },
             modifier = Modifier

@@ -114,6 +114,10 @@ internal fun SubtitleSelectionOverlay(
     onInternalTrackSelected: (Int) -> Unit,
     onAddonSubtitleSelected: (Subtitle) -> Unit,
     onDisableSubtitles: () -> Unit,
+    onChooseLocalSubtitle: () -> Unit,
+    onTransferLocalSubtitle: () -> Unit,
+    isImportingLocalSubtitle: Boolean,
+    localSubtitleError: String?,
     onEvent: (PlayerEvent) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -221,6 +225,13 @@ internal fun SubtitleSelectionOverlay(
         }
         isAss
     }
+    LaunchedEffect(selectedAddonSubtitle) {
+        if (selectedAddonSubtitle?.isLocal == true) {
+            currentSelectedOptionId = selectedSubtitleOptionId(
+                sessionInternalTracks, selectedInternalIndex, selectedAddonSubtitle
+            )
+        }
+    }
     val listFocusRequester = remember { FocusRequester() }
     val listState = remember(visible) {
         val selectedIndex = flatOptions.indexOfFirst { it.id == sessionSelectedOptionId }
@@ -265,6 +276,14 @@ internal fun SubtitleSelectionOverlay(
                 onClick = { editorOpen = !editorOpen }
             )
 
+            if (!editorOpen) {
+                PanelActionRow(
+                    label = stringResource(if (isImportingLocalSubtitle) R.string.subtitle_local_loading else R.string.subtitle_local_choose),
+                    onClick = { if (!isImportingLocalSubtitle) onChooseLocalSubtitle() }
+                )
+                PanelActionRow(label = stringResource(R.string.subtitle_local_transfer), onClick = onTransferLocalSubtitle)
+                localSubtitleError?.let { Text(text = it, style = MaterialTheme.typography.bodySmall) }
+            }
             Spacer(modifier = Modifier.height(NuvioTheme.spacing.sm))
 
             if (editorOpen) {
@@ -1048,7 +1067,8 @@ private fun buildSubtitleLanguageRailItems(
     val languageEntries = if (showOnlyPreferredLanguages) {
         val preferredKeys = preferredOrder.toSet()
         counts.entries.filter { entry ->
-            entry.key in preferredKeys || entry.key == currentLanguageKey
+            entry.key in preferredKeys || entry.key == currentLanguageKey ||
+                addonSubtitles.any { it.isLocal && normalizeOverlayLanguageKey(it.lang) == entry.key }
         }
     } else {
         counts.entries

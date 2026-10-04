@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nuvio-test</string>
+    <string name="app_name">Nuvio</string>
     <string name="tv_channel_continue_watching">Continuar Assistindo</string>
     <string name="type_movie">Filme</string>
     <string name="type_movies">Filmes</string>
@@ -3111,4 +3111,16 @@
     <string name="stream_test_error_prefix">Erro: %1$s</string>
     <string name="stream_test_video_bitrate">Taxa média de bits do vídeo: %1$s</string>
     <string name="stream_test_error_connection">Falha na conexão. O link do último stream reproduzido pode ter expirado ou estar inacessível. Por favor, reproduza o vídeo novamente e tente de novo.</string>
+    <string name="subtitle_local_choose">Escolher arquivo de legenda</string>
+    <string name="subtitle_local_loading">Lendo legenda…</string>
+    <string name="subtitle_local_source">Arquivo local: %1$s</string>
+    <string name="subtitle_local_format_error">Escolha um arquivo SRT, VTT, ASS ou SSA.</string>
+    <string name="subtitle_local_read_error">Não foi possível ler a legenda. Confira o formato, a permissão e o limite de 8 MiB.</string>
+    <string name="subtitle_local_transfer">Enviar legenda pelo celular</string>
+    <string name="subtitle_local_transfer_loading">Iniciando envio de legenda…</string>
+    <string name="subtitle_local_transfer_instruction">Leia o QR com o celular na mesma rede e envie um arquivo SRT, VTT, ASS ou SSA (até 8 MiB). Este QR expira em 10 minutos.</string>
+    <string name="subtitle_local_transfer_error">Não foi possível iniciar o envio. Confira a rede da TV e tente novamente.</string>
+    <string name="subtitle_local_transfer_expired">O envio expirou. Feche e abra novamente para obter outro QR.</string>
+    <string name="subtitle_local_send">Enviar legenda</string>
+    <string name="subtitle_local_received">Arquivo recebido. Aguarde a legenda aparecer na TV.</string>
 </resources>

@@ -1,0 +1,51 @@
+[
+  {
+    "target": "app/src/main/res/mipmap-mdpi/ic_launcher.png",
+    "resource_id": "0x7f0e0006",
+    "apk_path": "res/9w.png",
+    "sha256": "d4bb659f422b1f24e922451381b178668ffbee107621e7e9d1c0b1ab7277240c",
+    "previous_sha256": "e3fad9ca06156bb5501f8cb0ea37af038818cf7721c9b71fe0b76290861ae438"
+  },
+  {
+    "target": "app/src/main/res/mipmap-hdpi/ic_launcher.png",
+    "resource_id": "0x7f0e0006",
+    "apk_path": "res/yn.png",
+    "sha256": "95d0e14993e80930a1ccc9b390dbd111c0e5821d0d3487879e9a5cd4e8df5bcf",
+    "previous_sha256": "5a8f1214197a52d0c6538f8da5f2091b9c0285898e742898370f4e2d74a51c9c"
+  },
+  {
+    "target": "app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+    "resource_id": "0x7f0e0006",
+    "apk_path": "res/FS.png",
+    "sha256": "13748a26480e5efbfdc813f591abead5e13554356e17452510dcf796b3353f38",
+    "previous_sha256": "000808620bdfc1662d2f76f6a5f762c0cf5f1625083cba132200e18ba2451847"
+  },
+  {
+    "target": "app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+    "resource_id": "0x7f0e0006",
+    "apk_path": "res/RJ.png",
+    "sha256": "733b69150f4648bc5a50caa9bb1b64fc54bab0e7d82025823a9f9b7d2bb17ecb",
+    "previous_sha256": "00ac92ff91eeee7d16a39d9402c9f995beb74b974ec6fae67bcc07fefc368d02"
+  },
+  {
+    "target": "app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+    "resource_id": "0x7f0e0006",
+    "apk_path": "res/o-.png",
+    "sha256": "a597806657ee1f0db7db66ad748938e02094ad17def0b2800366cd96b6a60e0e",
+    "previous_sha256": "a1c2403fd51eb467b18e4a85994bebc6f72bb60aafc651181c643f89313e8e5f"
+  },
+  {
+    "target": "app/src/main/res/mipmap-xhdpi/banner.png",
+    "resource_id": "0x7f0e0000",
+    "apk_path": "res/Zg.png",
+    "sha256": "034cf01717420e607180671d6758f39b017e24ac97ac464bf2dcd5228e085ff8",
+    "previous_sha256": "683396329cd05395b3c03d48666fa8193368dbce59564963f37f4a2d2f6d5934"
+  },
+  {
+    "target": "app/src/main/res/drawable/ic_launcher.png",
+    "resource_id": "0x7f0800b9",
+    "apk_path": "res/S5.png",
+    "sha256": "9c54718bfb36fa1903f0adb540ad7e07e191db98b4ced6aa608d1e69e0e594f8",
+    "previous_sha256": "f71b7b944185cb2801b227872b10fd4337b1038696bf2d2eb6347e4f2a0799ab"
+  }
+]

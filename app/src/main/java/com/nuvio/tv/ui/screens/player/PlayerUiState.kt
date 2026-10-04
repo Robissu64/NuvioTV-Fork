@@ -124,6 +124,8 @@ data class PlayerUiState(
     val isLoadingAddonSubtitles: Boolean = false,
     val selectedAddonSubtitle: Subtitle? = null,
     val addonSubtitlesError: String? = null,
+    val isImportingLocalSubtitle: Boolean = false,
+    val localSubtitleError: String? = null,
     val installedSubtitleAddonOrder: List<String> = emptyList(),
     // Episodes/streams side panel (for series)
     val showEpisodesPanel: Boolean = false,
@@ -288,6 +290,9 @@ sealed class PlayerEvent {
     data class OnSelectSubtitleTrack(val index: Int) : PlayerEvent()
     data object OnDisableSubtitles : PlayerEvent()
     data class OnSelectAddonSubtitle(val subtitle: Subtitle) : PlayerEvent()
+    data class OnSelectLocalSubtitle(val uri: android.net.Uri) : PlayerEvent()
+    data class OnLocalSubtitlePickerClosed(val resumePlayback: Boolean) : PlayerEvent()
+    data class OnUploadLocalSubtitle(val name: String, val bytes: ByteArray) : PlayerEvent()
     data class OnSetPlaybackSpeed(val speed: Float) : PlayerEvent()
     data object OnToggleControls : PlayerEvent()
     data object OnShowAudioOverlay : PlayerEvent()

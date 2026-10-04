@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Nuvio-test</string>
+    <string name="app_name">Nuvio</string>
     <string name="tv_channel_continue_watching">Continue Watching</string>
     <string name="type_movie">Movie</string>
     <string name="type_movies">Movies</string>
@@ -3497,4 +3497,16 @@
     <string name="ui_scale_group_subtitle" formatted="false">Scale the whole interface between 85% and 115%</string>
     <string name="panel_audio_adjustments">Delay and gain</string>
     <string name="panel_audio_back_to_tracks">Back to tracks</string>
+    <string name="subtitle_local_choose">Choose subtitle file</string>
+    <string name="subtitle_local_loading">Reading subtitle…</string>
+    <string name="subtitle_local_source">Local file: %1$s</string>
+    <string name="subtitle_local_format_error">Choose an SRT, VTT, ASS or SSA file.</string>
+    <string name="subtitle_local_read_error">Could not read the subtitle. Check format, permission and the 8 MiB limit.</string>
+    <string name="subtitle_local_transfer">Send subtitle from phone</string>
+    <string name="subtitle_local_transfer_loading">Starting subtitle transfer…</string>
+    <string name="subtitle_local_transfer_instruction">Scan with your phone on the same network and send an SRT, VTT, ASS or SSA file (up to 8 MiB). This QR expires in 10 minutes.</string>
+    <string name="subtitle_local_transfer_error">Could not start transfer. Check the TV network and try again.</string>
+    <string name="subtitle_local_transfer_expired">Transfer expired. Close and reopen to get a new QR.</string>
+    <string name="subtitle_local_send">Send subtitle</string>
+    <string name="subtitle_local_received">File received. Wait for the subtitle to appear on the TV.</string>
 </resources>
