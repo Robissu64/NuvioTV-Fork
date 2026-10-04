@@ -211,6 +211,15 @@ android {
             buildConfigField("String", "PREMIUMIZE_CLIENT_ID", "\"${devProperties.getProperty("PREMIUMIZE_CLIENT_ID", localProperties.getProperty("PREMIUMIZE_CLIENT_ID", ""))}\"")
             buildConfigField("String", "SPONSOR_NAMES", buildConfigString(sponsorNames))
         }
+        // Same full feature set, isolated Android identity for testing beside V1.2.
+        create("tvTest") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".test"
+            resValue("string", "center_test_app_name", "Nuvio Teste")
+            matchingFallbacks += "debug"
+            // CI never receives the persistent private key. Sign these APKs locally.
+            signingConfig = null
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -321,6 +330,26 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+}
+
+// Keep the existing workflow/task and artifact path intact. It builds the main
+// package first, then stages distinctly named unsigned test APKs for local signing.
+val stageNuvioTestApks = tasks.register<Copy>("stageNuvioTestApks") {
+    dependsOn("assembleFullTvTest")
+    from(layout.buildDirectory.dir("outputs/apk/full/tvTest")) {
+        include("*.apk")
+        rename { "Nuvio-Teste-CI-$it" }
+    }
+    into(layout.buildDirectory.dir("outputs/apk/full/debug"))
+}
+tasks.matching { it.name == "assembleFullDebug" }.configureEach {
+    finalizedBy(stageNuvioTestApks)
+}
+configurations.named("tvTestImplementation") {
+    extendsFrom(configurations.getByName("debugImplementation"))
+}
+configurations.named("tvTestRuntimeOnly") {
+    extendsFrom(configurations.getByName("debugRuntimeOnly"))
 }
 
 

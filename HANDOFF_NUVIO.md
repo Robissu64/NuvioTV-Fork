@@ -94,3 +94,13 @@ Novos: LocalSubtitleFiles.kt, SubtitleVisibility.kt, LocalSubtitleTransferServer
 Alterados: app/build.gradle.kts (somente nome e versão); domain/model/Subtitle.kt; PlayerRuntimeController.kt, Initialization, Lifecycle, Observers, PlaybackEvents, SubtitleTiming e TrackSelection; PlayerScreen.kt, PlayerUiState.kt e SubtitleSelectionOverlay.kt; sete PNGs e strings app_name das traduções/debug, com strings locais novas em EN/PT-BR. Relação exata em ENTREGA.json no ZIP.
 
 Pendências: decisão segura para testar na TV devido à assinatura; validação real de CX Explorer e legendas; configuração própria para provedor online. Na integração futura, corrigir a verificação de Range do OpenSubtitlesHasher: ele atualmente aceita resposta 200 ao pedir o fim do vídeo e pode gerar hash errado quando o servidor ignora o range. Não tratar esse hash como correspondência certa. Também falta leitura seekable de URI local e caminho de consulta editável para arquivo sem ID.
+
+## Etapa 5: variante separada autorizada — implementação e build em andamento
+
+- O usuário autorizou Nuvio Teste ao lado da V1.2, com applicationId exclusivo e keystore persistente fora do Git. Não autorizou desinstalar ou apagar dados da instalação aprovada.
+- Base local/remota novamente conferida: 38bb37755ae9938938b01a6cb76aa4c5d9d616b8, nuvio-test, checkout limpo.
+- Novo buildType tvTest deriva de debug, mantém a flavor full, todas as fontes, plugins e dependências. Pacote com.nuvio.tv.center.test; rótulo de todas as atividades do launcher Nuvio Teste. Principal permanece com.nuvio.tv.center / Nuvio.
+- assembleFullDebug continua disponível e gera o pacote principal; finalizador assembleFullTvTest copia APKs de teste, distintamente nomeados Nuvio-Teste-CI-*, para o diretório de artefatos existente. Nenhum arquivo de .github foi editado.
+- APKs tvTest saem sem assinatura da CI: assinatura persistente será aplicada localmente. Não instalar os APKs unsigned do artefato; usar a entrega final assinada.
+- FileProvider usa ${applicationId}.fileprovider e o código usa context.packageName. A identidade separada terá armazenamento/configurações independentes da V1.2.
+- Nenhuma fonte de áudio, login, abertura externa ou legendas foi modificada nesta etapa. Compilação e inspeção dos APKs ainda pendentes.
