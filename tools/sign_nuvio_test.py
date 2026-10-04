@@ -96,8 +96,10 @@ def sign(folder, jdk, build_tools, source, output):
         aligned, signed = Path(temp) / "aligned.apk", Path(temp) / "signed.apk"
         run([build_tools / "zipalign.exe", "-P", "16", "-f", "4", source, aligned])
         signer = [jdk / "bin/java.exe", "-jar", build_tools / "lib/apksigner.jar"]
+        # PKCS12 uses the store password for the private key. Supplying the same
+        # password file twice makes apksigner consume two lines from one stream.
         run([*signer, "sign", "--ks", key, "--ks-key-alias", ALIAS,
-             "--ks-pass", f"file:{password}", "--key-pass", f"file:{password}",
+             "--ks-type", "PKCS12", "--ks-pass", f"file:{password}",
              "--v1-signing-enabled", "true", "--v2-signing-enabled", "true",
              "--v3-signing-enabled", "true", "--v4-signing-enabled", "false",
              "--out", signed, aligned])

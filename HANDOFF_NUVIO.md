@@ -1,5 +1,16 @@
 # Handoff Nuvio — 04/10/2026
 
+## Estado atual para retomar no Codex ou ChatGPT Work
+
+- Variante **Nuvio Teste V1.3** concluída, pacote **com.nuvio.tv.center.test**, versão 1361 / 0.9.0-center-v1.3-local-subtitles. Coexiste com a V1.2; tem armazenamento, conta local, addons e preferências independentes. Nenhum comando de instalação/desinstalação/limpeza foi executado na TV.
+- Principal continua com.nuvio.tv.center / Nuvio no código. Todas as fontes de player, áudio, login, abertura externa e legendas da V1.3 anterior preservadas. Ajuste da central 0–+6 dB e FFmpeg modificado mantidos; QR, SRT/VTT/ASS/SSA, seletor e envio pelo celular incluídos.
+- Build final: https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37206601339, código **7a49feb13fa1baf192ab5530052879ea8eed3480**, BUILD SUCCESSFUL em 19m37s. Branch nuvio-test. Commits posteriores de relatório/documentação não mudam o código do APK.
+- APKs finais assinados ARM32 e ARM64 em **C:/Users/Robson/Documents/Nuvio-Entregas-2026-10-04/Nuvio-Teste**. NUVIO_TESTE_APK_VALIDACAO.json registra todos os hashes, certificado e verificações.
+- Keystore persistente fora do Git: **C:/Users/Robson/.nuvio-signing/nuvio-teste/nuvio-teste.p12**. Certificado **4953b9702476ac1820633877f44057ff6a3f81a0ce8b35453844a3f2c605e08c**, o mesmo nos dois APKs finais. Backup privado do diretório completo; não anexar chave/senha ao Work nem ao ZIP de código. Procedimento em ASSINATURA_NUVIO_TESTE.md e tools/sign_nuvio_test.py.
+- .github intacta, árvore Git **553e4971b321a530396a538ee7390cb4ba49c2bd**. Workflow original reutilizado; geração de variante e staging configurados somente no Gradle do app.
+- Próximo passo: teste real na TCL C835 conforme TESTE_TV_NUVIO.md, preservando a instalação aprovada. Busca online direta por filename segue pendente de API key própria; addons existentes preservados. Os registros abaixo são o histórico das etapas.
+
+
 ## Etapa 1: auditoria concluída
 
 - Fork: https://github.com/Robissu64/NuvioTV-Fork, branch `nuvio-test`.
@@ -122,3 +133,18 @@ Pendências: decisão segura para testar na TV devido à assinatura; validação
 - Nenhuma alteração nos argumentos de memória do workflow, em .github ou nas fontes de funcionalidades. Logs da falha preservados na pasta externa de entrega; nova execução necessária.
 - Correção enviada em 4ff53722baa7ae2c1b67de6abd3b4faaf1b12f1c; execução de validação iniciada: https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37205458434. Aguardar conclusão antes de instalar/entregar APKs.
 - Run 37205458434: memória resolvida; assembleFullDebug terminou às 13:34:20 UTC, compileFullTvTestKotlin iniciou às 13:35:49, assembleFullTvTest terminou às 13:40:49. Ambos compilaram/empacotaram sem OOM. Falhou somente stageNuvioTestApks: Gradle exigiu dependência explícita com createFullDebugApkListingFileRedirect, que lê o diretório compartilhado. Essa dependência foi adicionada à tarefa de cópia para garantir que o listing principal seja concluído antes de acrescentar os APKs de teste. Workflow sem alterações; mais uma execução necessária para upload.
+- Correção do staging: 7a49feb13fa1baf192ab5530052879ea8eed3480; build https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37206601339. Sequenciamento/staging corrigidos passaram em reprodução local isolada com Gradle 8.13, sem SDK Android e sem tocar o checkout do app. Aguardar artefatos finais dessa execução.
+
+## Etapa 7: variante separada compilada, assinada e entregue
+
+- Run final 37206601339: teste C++ da central, FFmpeg ARM32/ARM64, principal, fullTvTest, staging e upload concluídos. Artifact 11305048543 contém quatro APKs: dois principais debug e dois testes unsigned. A entrega usa somente os dois testes assinados localmente.
+- Sequência confirmada no log: assembleFullDebug às 13:55:43 UTC, compileFullTvTestKotlin às 13:57:34, assembleFullTvTest às 14:04:11, stageNuvioTestApks às 14:04:12. Memória e dependência de staging resolvidas sem editar .github.
+- zipalign verificado e assinaturas v2/v3 verificadas pelo apksigner para Android API 24 ou superior; fingerprint dos dois APKs corresponde à keystore persistente. O assinador reutilizou a chave existente e recusou pacote principal e diretório privado dentro de Git nas verificações de proteção.
+- Inspeção dos seis APKs (quatro CI, dois assinados): package/version/name corretos, seis atividades do launcher com o mesmo rótulo, autoridades exclusivas incluindo FileProvider, filtros de vídeo externo, sete PNGs oficiais byte a byte, backend/fallback público do QR e classes de legenda/envio pelo celular presentes. Por arquitetura, libffmpegJNI.so é byte a byte igual entre principal, teste unsigned e teste assinado, com marcador CENTER_TEST_V1_2.
+- 46 testes JVM da implementação anterior permanecem válidos para fontes não modificadas nesta etapa; não foram reexecutados sem mudança de lógica. Teste C++ passou no build final. Reprodução Gradle 8.13 isolada reproduziu o erro de staging sem a dependência e passou com ela; fontes/logs incluídos em validacao/ no ZIP. Não houve validação real da variante na TV.
+- ZIP completo de código modificado, patches completo/incremental, hashes e manifestos preservados na pasta Nuvio-Teste. Aplicar patch completo sobre ee327e3ef694020554f91239ad4ce5d337233def ou incremental sobre 38bb37755ae9938938b01a6cb76aa4c5d9d616b8; nunca sobrescrever uma base desconhecida. Arquivos privados de assinatura excluídos da entrega compartilhável.
+
+### APKs finais Nuvio Teste
+
+- Nuvio-Teste-V1.3-ARM32.apk: armeabi-v7a, SHA-256 fce48349c503cfecea297821d12b0543b070f67f8746d8ebd901ef6d9e873a06.
+- Nuvio-Teste-V1.3-ARM64.apk: arm64-v8a, SHA-256 5784d3ea2b833947448d67ebe191d471f1641e230ff0d1088c9a0e8ecf007734.

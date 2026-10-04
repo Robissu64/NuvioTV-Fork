@@ -1,0 +1,166 @@
+{
+  "build_url": "https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37206601339",
+  "github_tree": "553e4971b321a530396a538ee7390cb4ba49c2bd",
+  "main_and_player_sources_unchanged_from": "38bb37755ae9938938b01a6cb76aa4c5d9d616b8",
+  "tv_validation": "pending",
+  "artifacts": [
+    {
+      "path": "C:\\Users\\Robson\\Documents\\Nuvio-Entregas-2026-10-04\\apk-37206601339\\app-full-arm64-v8a-debug.apk",
+      "sha256": "dd1039d3a4974ad271695cbcacea8a2adb85862d22026728dbd1dd71e9877786",
+      "architecture": "arm64-v8a",
+      "applicationId": "com.nuvio.tv.center",
+      "launcher_name": "Nuvio",
+      "launcher_activities_verified": 6,
+      "providers": [
+        "com.nuvio.tv.center.fileprovider",
+        "com.nuvio.tv.center.androidx-startup"
+      ],
+      "versionCode": 1361,
+      "versionName": "0.9.0-center-v1.3-local-subtitles",
+      "certificate_sha256": [
+        "7c1d20bd5ed84f8b8d1bf5453b8f279feeaae77b81d77fed30c7848ce8ea83ee"
+      ],
+      "persistent_signature": false,
+      "installable_test_delivery": false,
+      "official_resources_verified": 7,
+      "modified_decoder_verified": true,
+      "modified_decoder_sha256": "6f48bcb5a6a6f2d41bcbb263c8154dbcf663236638ff00a8165ecbbf5e6d3f64",
+      "official_login_fallback_verified": true,
+      "local_subtitles_and_phone_upload_present": true,
+      "external_video_intents_verified": true,
+      "code_commit": "7a49feb13fa1baf192ab5530052879ea8eed3480",
+      "build_run": "37206601339"
+    },
+    {
+      "path": "C:\\Users\\Robson\\Documents\\Nuvio-Entregas-2026-10-04\\apk-37206601339\\app-full-armeabi-v7a-debug.apk",
+      "sha256": "77360e1d5e64261eda990f03ed9fafa3886b03903ad619627237d048e3b28c04",
+      "architecture": "armeabi-v7a",
+      "applicationId": "com.nuvio.tv.center",
+      "launcher_name": "Nuvio",
+      "launcher_activities_verified": 6,
+      "providers": [
+        "com.nuvio.tv.center.fileprovider",
+        "com.nuvio.tv.center.androidx-startup"
+      ],
+      "versionCode": 1361,
+      "versionName": "0.9.0-center-v1.3-local-subtitles",
+      "certificate_sha256": [
+        "7c1d20bd5ed84f8b8d1bf5453b8f279feeaae77b81d77fed30c7848ce8ea83ee"
+      ],
+      "persistent_signature": false,
+      "installable_test_delivery": false,
+      "official_resources_verified": 7,
+      "modified_decoder_verified": true,
+      "modified_decoder_sha256": "d719f1972257feab2e4fe7356e506c50dee92a24315b57548536db40c44e283d",
+      "official_login_fallback_verified": true,
+      "local_subtitles_and_phone_upload_present": true,
+      "external_video_intents_verified": true,
+      "code_commit": "7a49feb13fa1baf192ab5530052879ea8eed3480",
+      "build_run": "37206601339"
+    },
+    {
+      "path": "C:\\Users\\Robson\\Documents\\Nuvio-Entregas-2026-10-04\\apk-37206601339\\Nuvio-Teste-CI-app-full-arm64-v8a-tvTest-unsigned.apk",
+      "sha256": "e9ec31c4fdb45695647b92487638343d29cdb7dec77be5b240b15ed7b26acdd7",
+      "architecture": "arm64-v8a",
+      "applicationId": "com.nuvio.tv.center.test",
+      "launcher_name": "Nuvio Teste",
+      "launcher_activities_verified": 6,
+      "providers": [
+        "com.nuvio.tv.center.test.fileprovider",
+        "com.nuvio.tv.center.test.androidx-startup"
+      ],
+      "versionCode": 1361,
+      "versionName": "0.9.0-center-v1.3-local-subtitles",
+      "certificate_sha256": [],
+      "persistent_signature": false,
+      "installable_test_delivery": false,
+      "official_resources_verified": 7,
+      "modified_decoder_verified": true,
+      "modified_decoder_sha256": "6f48bcb5a6a6f2d41bcbb263c8154dbcf663236638ff00a8165ecbbf5e6d3f64",
+      "official_login_fallback_verified": true,
+      "local_subtitles_and_phone_upload_present": true,
+      "external_video_intents_verified": true,
+      "code_commit": "7a49feb13fa1baf192ab5530052879ea8eed3480",
+      "build_run": "37206601339"
+    },
+    {
+      "path": "C:\\Users\\Robson\\Documents\\Nuvio-Entregas-2026-10-04\\apk-37206601339\\Nuvio-Teste-CI-app-full-armeabi-v7a-tvTest-unsigned.apk",
+      "sha256": "d8f0af8e48a27ab0e98f4dfc7c349c25604764251cc9804e8538af21d1ee350e",
+      "architecture": "armeabi-v7a",
+      "applicationId": "com.nuvio.tv.center.test",
+      "launcher_name": "Nuvio Teste",
+      "launcher_activities_verified": 6,
+      "providers": [
+        "com.nuvio.tv.center.test.fileprovider",
+        "com.nuvio.tv.center.test.androidx-startup"
+      ],
+      "versionCode": 1361,
+      "versionName": "0.9.0-center-v1.3-local-subtitles",
+      "certificate_sha256": [],
+      "persistent_signature": false,
+      "installable_test_delivery": false,
+      "official_resources_verified": 7,
+      "modified_decoder_verified": true,
+      "modified_decoder_sha256": "d719f1972257feab2e4fe7356e506c50dee92a24315b57548536db40c44e283d",
+      "official_login_fallback_verified": true,
+      "local_subtitles_and_phone_upload_present": true,
+      "external_video_intents_verified": true,
+      "code_commit": "7a49feb13fa1baf192ab5530052879ea8eed3480",
+      "build_run": "37206601339"
+    },
+    {
+      "path": "C:\\Users\\Robson\\Documents\\Nuvio-Entregas-2026-10-04\\Nuvio-Teste\\Nuvio-Teste-V1.3-ARM32.apk",
+      "sha256": "fce48349c503cfecea297821d12b0543b070f67f8746d8ebd901ef6d9e873a06",
+      "architecture": "armeabi-v7a",
+      "applicationId": "com.nuvio.tv.center.test",
+      "launcher_name": "Nuvio Teste",
+      "launcher_activities_verified": 6,
+      "providers": [
+        "com.nuvio.tv.center.test.fileprovider",
+        "com.nuvio.tv.center.test.androidx-startup"
+      ],
+      "versionCode": 1361,
+      "versionName": "0.9.0-center-v1.3-local-subtitles",
+      "certificate_sha256": [
+        "4953b9702476ac1820633877f44057ff6a3f81a0ce8b35453844a3f2c605e08c"
+      ],
+      "persistent_signature": true,
+      "installable_test_delivery": true,
+      "official_resources_verified": 7,
+      "modified_decoder_verified": true,
+      "modified_decoder_sha256": "d719f1972257feab2e4fe7356e506c50dee92a24315b57548536db40c44e283d",
+      "official_login_fallback_verified": true,
+      "local_subtitles_and_phone_upload_present": true,
+      "external_video_intents_verified": true,
+      "code_commit": "7a49feb13fa1baf192ab5530052879ea8eed3480",
+      "build_run": "37206601339"
+    },
+    {
+      "path": "C:\\Users\\Robson\\Documents\\Nuvio-Entregas-2026-10-04\\Nuvio-Teste\\Nuvio-Teste-V1.3-ARM64.apk",
+      "sha256": "5784d3ea2b833947448d67ebe191d471f1641e230ff0d1088c9a0e8ecf007734",
+      "architecture": "arm64-v8a",
+      "applicationId": "com.nuvio.tv.center.test",
+      "launcher_name": "Nuvio Teste",
+      "launcher_activities_verified": 6,
+      "providers": [
+        "com.nuvio.tv.center.test.fileprovider",
+        "com.nuvio.tv.center.test.androidx-startup"
+      ],
+      "versionCode": 1361,
+      "versionName": "0.9.0-center-v1.3-local-subtitles",
+      "certificate_sha256": [
+        "4953b9702476ac1820633877f44057ff6a3f81a0ce8b35453844a3f2c605e08c"
+      ],
+      "persistent_signature": true,
+      "installable_test_delivery": true,
+      "official_resources_verified": 7,
+      "modified_decoder_verified": true,
+      "modified_decoder_sha256": "6f48bcb5a6a6f2d41bcbb263c8154dbcf663236638ff00a8165ecbbf5e6d3f64",
+      "official_login_fallback_verified": true,
+      "local_subtitles_and_phone_upload_present": true,
+      "external_video_intents_verified": true,
+      "code_commit": "7a49feb13fa1baf192ab5530052879ea8eed3480",
+      "build_run": "37206601339"
+    }
+  ]
+}
