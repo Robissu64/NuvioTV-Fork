@@ -249,6 +249,7 @@ class PlayerRuntimeController(
     internal var streamSubtitles: List<Subtitle> = emptyList()
     internal var localSubtitles: List<Subtitle> = emptyList()
     internal var localSubtitleImportJob: Job? = null
+    internal var localSubtitleImportGeneration: Int = 0
     internal var mpvAddonSubtitleSelectionJob: Job? = null
     internal var localSubtitleMediaKey: String? = null
     internal val localSubtitleCacheDir: java.io.File by lazy {

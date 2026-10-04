@@ -1574,6 +1574,7 @@ fun PlayerRuntimeController.onEvent(event: PlayerEvent) {
             }
         }
         is PlayerEvent.OnSelectSubtitleTrack -> {
+            cancelLocalSubtitleImport()
             mpvAddonSubtitleSelectionJob?.cancel()
             logSwitchTrace(
                 stage = "event-select-subtitle-internal",
@@ -1598,6 +1599,7 @@ fun PlayerRuntimeController.onEvent(event: PlayerEvent) {
             }
         }
         PlayerEvent.OnDisableSubtitles -> {
+            cancelLocalSubtitleImport()
             mpvAddonSubtitleSelectionJob?.cancel()
             logSwitchTrace(
                 stage = "event-disable-subtitles",
@@ -1631,6 +1633,7 @@ fun PlayerRuntimeController.onEvent(event: PlayerEvent) {
         }
         is PlayerEvent.OnUploadLocalSubtitle -> importLocalSubtitle(suppliedName = event.name, suppliedBytes = event.bytes)
         is PlayerEvent.OnSelectAddonSubtitle -> {
+            cancelLocalSubtitleImport()
             logSwitchTrace(
                 stage = "event-select-subtitle-addon",
                 message = "addonId=${event.subtitle.id} addonLang=${event.subtitle.lang} addonName=${event.subtitle.addonName}"

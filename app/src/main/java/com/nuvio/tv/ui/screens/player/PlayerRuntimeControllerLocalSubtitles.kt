@@ -19,7 +19,8 @@ import kotlin.coroutines.coroutineContext
 internal fun PlayerRuntimeController.importLocalSubtitle(
     uri: Uri? = null, suppliedName: String? = null, suppliedBytes: ByteArray? = null
 ) {
-    localSubtitleImportJob?.cancel()
+    cancelLocalSubtitleImport()
+    val generation = localSubtitleImportGeneration
     val streamAtSelection = currentStreamUrl
     val videoAtSelection = currentVideoId
     localSubtitleImportJob = scope.launch {
@@ -54,7 +55,8 @@ internal fun PlayerRuntimeController.importLocalSubtitle(
                     addonLogo = null, isLocal = true
                 )
             }
-            if (currentStreamUrl != streamAtSelection || currentVideoId != videoAtSelection) {
+            if (generation != localSubtitleImportGeneration ||
+                currentStreamUrl != streamAtSelection || currentVideoId != videoAtSelection) {
                 cachedFile?.delete()
                 return@launch
             }
@@ -62,7 +64,12 @@ internal fun PlayerRuntimeController.importLocalSubtitle(
             // because a renderer may still be reading its previous selection.
             localSubtitles = listOf(imported)
             localSubtitleMediaKey = "$streamAtSelection|$videoAtSelection"
-            _uiState.update { it.copy(addonSubtitles = (it.addonSubtitles.filterNot { s -> s.isLocal } + imported)) }
+            _uiState.update { it.copy(
+                addonSubtitles = (it.addonSubtitles.filterNot { s -> s.isLocal } + imported),
+                isImportingLocalSubtitle = false
+            ) }
+            // The selection event cancels pending imports. This import is already complete.
+            localSubtitleImportJob = null
             onEvent(PlayerEvent.OnSelectAddonSubtitle(imported))
         } catch (e: CancellationException) {
             cachedFile?.delete()
@@ -73,16 +80,24 @@ internal fun PlayerRuntimeController.importLocalSubtitle(
             _uiState.update { it.copy(localSubtitleError = message) }
             Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         } finally {
-            _uiState.update { it.copy(isImportingLocalSubtitle = false) }
+            if (generation == localSubtitleImportGeneration) {
+                _uiState.update { it.copy(isImportingLocalSubtitle = false) }
+            }
         }
     }
 }
 
 internal fun PlayerRuntimeController.clearLocalSubtitleSelection() {
-    localSubtitleImportJob?.cancel()
-    localSubtitleImportJob = null
+    cancelLocalSubtitleImport()
     localSubtitles = emptyList()
     localSubtitleMediaKey = null
+    _uiState.update { it.copy(localSubtitleError = null) }
+}
+
+internal fun PlayerRuntimeController.cancelLocalSubtitleImport() {
+    localSubtitleImportGeneration++
+    localSubtitleImportJob?.cancel()
+    localSubtitleImportJob = null
     _uiState.update { it.copy(isImportingLocalSubtitle = false, localSubtitleError = null) }
 }
 
