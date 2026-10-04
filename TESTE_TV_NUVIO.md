@@ -16,3 +16,5 @@ Busca direta online por nome de arquivo ainda não foi implementada: depende da 
 Para relatar: modelo da TV, APK/arquitetura, player ExoPlayer/libass/MPV usado, formato da legenda, etapa acima, resultado esperado/observado e mensagem exibida. Marcar separadamente o que funcionou no seletor e pelo celular.
 
 Teste adicional de importação lenta: ao ler uma legenda de provedor remoto, selecionar outra faixa ou desativar legendas antes da leitura terminar. A importação anterior deve ser cancelada e não pode substituir a escolha mais recente.
+
+**Resultado da conferência de assinatura:** incompatível com o APK aprovado do run 35792050378. Não instalar como atualização da V1.2 nem desinstalar para contornar o bloqueio. Testar em outro aparelho ou decidir previamente sobre pacote de testes separado. 

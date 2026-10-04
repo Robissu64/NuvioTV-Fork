@@ -1,0 +1,44 @@
+[
+  {
+    "path": "app-full-arm64-v8a-debug.apk",
+    "sha256": "fb900f25cd2a70f8337ffe8bffcf83e73a8a10eeb17f33fed02ae69d6078aa3e",
+    "applicationId": "com.nuvio.tv.center",
+    "versionCode": "1361",
+    "versionName": "0.9.0-center-v1.3-local-subtitles",
+    "certificate_sha256": [
+      "3300a5119494072572487b9497cdfb8c37b8320a6d0fcdc368a99bbce5497d38"
+    ],
+    "build_run": "37201800191",
+    "code_commit": "948267790a85dcaf1530e55ee3a27c9c8f046b1a",
+    "architecture": "arm64-v8a",
+    "launcher_name": "Nuvio",
+    "official_resources_verified": 7,
+    "modified_decoder_verified": true,
+    "previous_certificate_sha256": [
+      "dbbaf04c198f64d3114a2581af29186c039361fd10a7a8c0bde7c24f7f15dfec"
+    ],
+    "upgrade_signature_matches": false,
+    "official_login_fallback_verified": true
+  },
+  {
+    "path": "app-full-armeabi-v7a-debug.apk",
+    "sha256": "7321c94479d4b43d4444bf0998876dfc55503a881041afa7cee1ef7f0ae343e4",
+    "applicationId": "com.nuvio.tv.center",
+    "versionCode": "1361",
+    "versionName": "0.9.0-center-v1.3-local-subtitles",
+    "certificate_sha256": [
+      "3300a5119494072572487b9497cdfb8c37b8320a6d0fcdc368a99bbce5497d38"
+    ],
+    "build_run": "37201800191",
+    "code_commit": "948267790a85dcaf1530e55ee3a27c9c8f046b1a",
+    "architecture": "armeabi-v7a",
+    "launcher_name": "Nuvio",
+    "official_resources_verified": 7,
+    "modified_decoder_verified": true,
+    "previous_certificate_sha256": [
+      "dbbaf04c198f64d3114a2581af29186c039361fd10a7a8c0bde7c24f7f15dfec"
+    ],
+    "upgrade_signature_matches": false,
+    "official_login_fallback_verified": true
+  }
+]

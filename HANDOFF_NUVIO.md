@@ -59,3 +59,38 @@ Próxima implementação online: configuração de API key em armazenamento priv
 - 46 testes JVM passaram após acrescentar quatro casos de visibilidade: PT-BR vs PT-PT, idioma desconhecido local, filtro vazio, snapshots progressivos e deduplicação.
 - APK anterior da correção QR recuperado do run 35792050378 para conferir a assinatura antes de recomendar atualização. Certificado SHA-256: `dbbaf04c198f64d3114a2581af29186c039361fd10a7a8c0bde7c24f7f15dfec`. A identidade Android sozinha não garante atualização: a assinatura nova também precisa corresponder. Não desinstalar o app aprovado para contornar incompatibilidade.
 - Revisão de concorrência: selecionar outra faixa/desativar cancela importação local pendente; uma leitura antiga não pode aplicar depois da escolha mais recente nem apagar o indicador de uma nova importação. Roteiro de teste incluído em TESTE_TV_NUVIO.md.
+
+
+## Etapa 4: compilação, inspeção dos APKs e entrega concluídas
+
+- Build final bem-sucedido: https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37201800191.
+- Código compilado: `948267790a85dcaf1530e55ee3a27c9c8f046b1a`; Gradle assembleFullDebug + decoder local, BUILD SUCCESSFUL em 9m59s.
+- Commits de implementação enviados à nuvio-test:
+  - 7c9cf18053d8208b60dada783a5ddbd71c47ac68 — nome, PNGs oficiais, importação local e alternativa por QR.
+  - 82b629770be364a24cc50f1c93b8db04de3d0e25 — visibilidade, cache MPV e confirmação de upload.
+  - 948267790a85dcaf1530e55ee3a27c9c8f046b1a — cancelamento de importação quando chega escolha mais recente e roteiro TV.
+- APKs full/debug ARM32 (armeabi-v7a) e ARM64 (arm64-v8a), versão 1361 / 0.9.0-center-v1.3-local-subtitles, applicationId com.nuvio.tv.center.
+- Nome Nuvio, sete recursos oficiais, marcador CENTER_TEST_V1_2 no libffmpegJNI.so e fallback público de login (backend e chave anon existentes, sem imprimir a chave) conferidos dentro dos APKs. SHA-256 dos APKs e certificados em NUVIO_APK_VALIDACAO.json.
+- 46 testes JVM passaram na revisão final; teste C++ da central passou no workflow final. Não houve teste da nova etapa na TCL C835.
+- `.github` permanece intacta: árvore Git da base e do final é 553e4971b321a530396a538ee7390cb4ba49c2bd; diff vazio. MainActivity, Manifest, PlayerMediaSourceFactory, PlayerSettingsDataStore e todo ffmpeg-decoder-downmix também sem mudanças contra a base.
+- Fonte modificada, patch binário, metadados, logs, APKs e legendas de teste preservados localmente em C:/Users/Robson/Documents/Nuvio-Entregas-2026-10-04. ZIP do código contém somente arquivos modificados e material de continuação; reaplicar sobre a base indicada, não sobre o upstream oficial.
+
+### Assinatura e preservação dos dados da TV
+
+- Em resposta à pergunta, o usuário informou que não guardou keystore e pediu investigação sem alterar .github. Não autorizou desinstalação ou perda de dados.
+- Nenhuma keystore/JKS encontrada no projeto, no histórico completo da branch (clone não raso), em ~/.android ou em Downloads. O artefato aprovado do run 35792050378 contém apenas os dois APKs. A API do fork listou somente artefatos APK desse workflow e nenhum cache.
+- Certificado anterior: dbbaf04c198f64d3114a2581af29186c039361fd10a7a8c0bde7c24f7f15dfec, Android Debug, criado em 22/09/2026 22:46:30 UTC no build anterior.
+- Certificado final: 3300a5119494072572487b9497cdfb8c37b8320a6d0fcdc368a99bbce5497d38.
+- Assinatura compatível com o APK do build aprovado: false.
+- A chave privada não está no certificado do APK. A configuração atual usa a keystore debug temporária do runner. Manter package/versionCode não resolve incompatibilidade de assinatura. Fonte oficial: https://developer.android.com/studio/publish/app-signing.
+- Nenhum comando de instalação, desinstalação, limpeza de dados ou mudança de applicationId foi executado. Manter a V1.2 instalada até escolher uma alternativa.
+- Opções a apresentar: testar os APKs finais em outro aparelho sem a instalação antiga; ou, com autorização explícita para excepcionar a identidade somente do pacote de testes, preparar um app separado para coexistir com a V1.2. Uma migração para nova assinatura só pode ocorrer após revisar exportação/backup viável e obter autorização expressa; não prometer recuperação completa de dados (Manifest atual tem allowBackup=false).
+- Para futuras atualizações, guardar uma chave estável privadamente e assinar os APKs localmente após o Actions permite manter .github intacta. Isso não recupera a chave anterior nem autoriza uma migração agora.
+
+### Arquivos e continuação
+
+Novos: LocalSubtitleFiles.kt, SubtitleVisibility.kt, LocalSubtitleTransferServer.kt, LocalSubtitleTransferOverlay.kt, PlayerRuntimeControllerLocalSubtitles.kt; testes LocalSubtitleFilesTest.kt, SubtitleVisibilityTest.kt e LocalSubtitleTransferServerTest.kt; documentos HANDOFF_NUVIO.md, TESTE_TV_NUVIO.md, NUVIO_RECURSOS_OFICIAIS.json e NUVIO_APK_VALIDACAO.json.
+
+Alterados: app/build.gradle.kts (somente nome e versão); domain/model/Subtitle.kt; PlayerRuntimeController.kt, Initialization, Lifecycle, Observers, PlaybackEvents, SubtitleTiming e TrackSelection; PlayerScreen.kt, PlayerUiState.kt e SubtitleSelectionOverlay.kt; sete PNGs e strings app_name das traduções/debug, com strings locais novas em EN/PT-BR. Relação exata em ENTREGA.json no ZIP.
+
+Pendências: decisão segura para testar na TV devido à assinatura; validação real de CX Explorer e legendas; configuração própria para provedor online. Na integração futura, corrigir a verificação de Range do OpenSubtitlesHasher: ele atualmente aceita resposta 200 ao pedir o fim do vídeo e pode gerar hash errado quando o servidor ignora o range. Não tratar esse hash como correspondência certa. Também falta leitura seekable de URI local e caminho de consulta editável para arquivo sem ID.
