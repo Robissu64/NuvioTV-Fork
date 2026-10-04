@@ -113,3 +113,10 @@ Pendências: decisão segura para testar na TV devido à assinatura; validação
 - tools/sign_nuvio_test.py cria/verifica a chave persistente, recusa outra identidade ou chave, alinha, assina e verifica APKs. ASSINATURA_NUVIO_TESTE.md descreve reprodução e backup privado. TESTE_TV_NUVIO.md atualizado para instalação ao lado da V1.2.
 - Android Build Tools 36.0.0 obtidos do repositório oficial Google e checksum do catálogo conferido. JDK17 portátil da etapa anterior reutilizado. Arquivos de ferramentas/entrega fora do checkout.
 - Teste C++ de ganho e FFmpeg ARM32/ARM64 passaram nesta execução; aguardando compilação Android. Launcher usa ComponentName(context.packageName, classe), portanto temas permanecem isolados entre os pacotes. Upload de legenda usa porta dinâmica, sem porta fixa compartilhada.
+- Patches completo (base ee327e3) e incremental (base 38bb377) preparados e validados com git apply --cached --check em índices temporários, sem modificar o checkout. ZIP de continuação inspecionado: contém o assinador e não contém keystore, senha ou mudanças em .github. Será regenerado com a validação final dos APKs.
+
+## Correção da compilação das duas variantes
+
+- Run 37203604875 falhou por Java heap space nas tarefas compileFullDebugKotlin e compileFullTvTestKotlin. O log confirma que iniciaram juntas às 12:58:28 e 12:58:43 UTC, compartilhando o heap de 3072 MiB imposto pelo workflow.
+- Finalizadores Gradle ordenam a tarefa final, mas não impedem que suas dependências comecem antes. Adicionada ordenação mustRunAfter(assembleFullDebug) para tarefas FullTvTest: agora a variante nova começa somente depois de concluir a principal. Solicitar assembleFullTvTest diretamente não agenda a principal.
+- Nenhuma alteração nos argumentos de memória do workflow, em .github ou nas fontes de funcionalidades. Logs da falha preservados na pasta externa de entrega; nova execução necessária.

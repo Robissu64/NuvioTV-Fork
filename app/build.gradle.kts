@@ -345,6 +345,12 @@ val stageNuvioTestApks = tasks.register<Copy>("stageNuvioTestApks") {
 tasks.matching { it.name == "assembleFullDebug" }.configureEach {
     finalizedBy(stageNuvioTestApks)
 }
+// Finalizer dependencies can otherwise start before the finalized task finishes.
+// Two in-process Kotlin compilations exceed the unchanged CI's 3 GiB heap.
+// Ordering does not schedule fullDebug when fullTvTest is requested directly.
+tasks.matching { it.name.contains("FullTvTest") }.configureEach {
+    mustRunAfter("assembleFullDebug")
+}
 configurations.named("tvTestImplementation") {
     extendsFrom(configurations.getByName("debugImplementation"))
 }
