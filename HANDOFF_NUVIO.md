@@ -104,3 +104,12 @@ Pendências: decisão segura para testar na TV devido à assinatura; validação
 - APKs tvTest saem sem assinatura da CI: assinatura persistente será aplicada localmente. Não instalar os APKs unsigned do artefato; usar a entrega final assinada.
 - FileProvider usa ${applicationId}.fileprovider e o código usa context.packageName. A identidade separada terá armazenamento/configurações independentes da V1.2.
 - Nenhuma fonte de áudio, login, abertura externa ou legendas foi modificada nesta etapa. Compilação e inspeção dos APKs ainda pendentes.
+
+## Etapa 6: chave persistente e procedimento de assinatura concluídos
+
+- Commit da variante: 9482cbba3d25d90b0f24aa4727d9121528b05c9a; build em andamento: https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37203604875.
+- Keystore criada em C:/Users/Robson/.nuvio-signing/nuvio-teste/nuvio-teste.p12, fora do Git. RSA 3072, alias nuvio-teste, validade de 30 anos; senha aleatória em arquivo privado, ACL somente Robson/SYSTEM. Nenhum segredo enviado ao GitHub.
+- Certificado fixado: 4953b9702476ac1820633877f44057ff6a3f81a0ce8b35453844a3f2c605e08c. Reutilizar essa chave para todas as próximas entregas Nuvio Teste.
+- tools/sign_nuvio_test.py cria/verifica a chave persistente, recusa outra identidade ou chave, alinha, assina e verifica APKs. ASSINATURA_NUVIO_TESTE.md descreve reprodução e backup privado. TESTE_TV_NUVIO.md atualizado para instalação ao lado da V1.2.
+- Android Build Tools 36.0.0 obtidos do repositório oficial Google e checksum do catálogo conferido. JDK17 portátil da etapa anterior reutilizado. Arquivos de ferramentas/entrega fora do checkout.
+- Teste C++ de ganho e FFmpeg ARM32/ARM64 passaram nesta execução; aguardando compilação Android. Launcher usa ComponentName(context.packageName, classe), portanto temas permanecem isolados entre os pacotes. Upload de legenda usa porta dinâmica, sem porta fixa compartilhada.
