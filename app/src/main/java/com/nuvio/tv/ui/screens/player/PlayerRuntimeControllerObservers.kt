@@ -284,7 +284,7 @@ internal fun PlayerRuntimeController.withStreamSidecarSubtitles(addonSubtitles: 
 internal fun PlayerRuntimeController.filterToVisibleAddonSubtitles(
     subtitles: List<Subtitle>
 ): List<Subtitle> {
-    val all = (subtitles + localSubtitles).distinctBy { addonSubtitleKey(it) }
+    val all = com.nuvio.tv.core.player.SubtitleVisibility.merge(subtitles, localSubtitles) { addonSubtitleKey(it) }
     val style = _uiState.value.subtitleStyle
     if (!style.showOnlyPreferredLanguages) return all
 
@@ -318,8 +318,8 @@ internal fun PlayerRuntimeController.filterToVisibleAddonSubtitles(
         }
     }
 
-    return all.filter { subtitle ->
-        subtitle.isLocal || preferredTargets.any { target ->
+    return com.nuvio.tv.core.player.SubtitleVisibility.filter(all, { it.isLocal }) { subtitle ->
+        preferredTargets.any { target ->
             PlayerSubtitleUtils.matchesLanguageCode(subtitle.lang, target)
         }
     }

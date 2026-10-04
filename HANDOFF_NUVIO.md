@@ -49,3 +49,12 @@ Fontes verificadas em 04/10/2026:
 - https://developer.android.com/training/data-storage/shared/documents-files
 
 Próxima implementação online: configuração de API key em armazenamento privado da instalação (sem logs/commits), autenticação opcional e quotas reportadas pelo serviço; busca editável por título/filename, parsing conservador de SxxExx e tags de release, PT-BR prioritário e seleção manual de resultados com fonte/release/idioma/hash. Usar ranges de início/fim para hash HTTP apenas quando o servidor realmente honrar Range; leitura seekable local quando viável. Validar e baixar pelo mesmo limite/pipeline local. Não baixar o filme inteiro para obter hash. Avaliar addons instalados para resolver metadados antes de duplicar a integração. Não há serviço online novo concluído nesta versão.
+
+## Revisão final da implementação
+
+- Commit inicial enviado: `7c9cf18053d8208b60dada783a5ddbd71c47ac68`.
+- Build inicial: https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37201015451 (não usar seus APKs como entrega final; revisão adicional em andamento).
+- Teste C++ de ganho da central e cross-compilação FFmpeg ARM32/ARM64 passaram nesse build.
+- Revisão adicional elimina cópia duplicada do cache local no MPV, conserva ASS/SSA e atrasa o fechamento do QR para permitir resposta HTTP ao celular.
+- 46 testes JVM passaram após acrescentar quatro casos de visibilidade: PT-BR vs PT-PT, idioma desconhecido local, filtro vazio, snapshots progressivos e deduplicação.
+- APK anterior da correção QR recuperado do run 35792050378 para conferir a assinatura antes de recomendar atualização. Certificado SHA-256: `dbbaf04c198f64d3114a2581af29186c039361fd10a7a8c0bde7c24f7f15dfec`. A identidade Android sozinha não garante atualização: a assinatura nova também precisa corresponder. Não desinstalar o app aprovado para contornar incompatibilidade.

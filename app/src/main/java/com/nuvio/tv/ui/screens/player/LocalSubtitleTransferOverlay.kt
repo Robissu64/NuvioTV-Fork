@@ -32,7 +32,8 @@ internal fun LocalSubtitleTransferOverlay(onEvent: (PlayerEvent) -> Unit, onClos
                 Handler(Looper.getMainLooper()).post {
                     if (active.get()) {
                         onEvent(PlayerEvent.OnUploadLocalSubtitle(name, bytes))
-                        onClose()
+                        // Let NanoHTTPD finish its acknowledgement before disposing the server.
+                        Handler(Looper.getMainLooper()).postDelayed({ if (active.get()) onClose() }, 800L)
                     }
                 }
             },

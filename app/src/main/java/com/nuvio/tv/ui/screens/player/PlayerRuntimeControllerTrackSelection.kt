@@ -517,15 +517,21 @@ internal fun PlayerRuntimeController.selectAddonSubtitle(subtitle: Subtitle) {
         val streamAtSelection = currentStreamUrl
         mpvAddonSubtitleSelectionJob = scope.launch {
             val localPath = try {
-                val decodedBody = downloadSubtitleBody(subtitle.url, subtitle.lang, subtitle.headers)
-                val sanitized = SubtitleMojibakeSanitizer.sanitize(decodedBody).toString()
-                val cacheDir = java.io.File(context.cacheDir, "subtitles").also { it.mkdirs() }
-                val ext = com.nuvio.tv.core.player.LocalSubtitleFiles.extension(
-                    android.net.Uri.parse(subtitle.url).lastPathSegment.orEmpty()
-                ) ?: "srt"
-                val file = java.io.File(cacheDir, "mpv_${subtitle.id.hashCode()}.$ext")
-                file.writeText(sanitized, Charsets.UTF_8)
-                file.absolutePath
+                if (subtitle.isLocal) {
+                    // Import already normalized UTF-8 and bounded the file. Keep ASS/SSA styling
+                    // and reuse this session-owned cache instead of leaking another MPV copy.
+                    requireNotNull(android.net.Uri.parse(subtitle.url).path)
+                } else {
+                    val decodedBody = downloadSubtitleBody(subtitle.url, subtitle.lang, subtitle.headers)
+                    val sanitized = SubtitleMojibakeSanitizer.sanitize(decodedBody).toString()
+                    val cacheDir = java.io.File(context.cacheDir, "subtitles").also { it.mkdirs() }
+                    val ext = com.nuvio.tv.core.player.LocalSubtitleFiles.extension(
+                        android.net.Uri.parse(subtitle.url).lastPathSegment.orEmpty()
+                    ) ?: "srt"
+                    val file = java.io.File(cacheDir, "mpv_${subtitle.id.hashCode()}.$ext")
+                    file.writeText(sanitized, Charsets.UTF_8)
+                    file.absolutePath
+                }
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
             } catch (e: Exception) {
