@@ -1,0 +1,38 @@
+{
+  "branch": "nuvio-test",
+  "code_commit": "e141668fb6b27343cd09a9ce9d8be5e0f301b9c6",
+  "build_run": "37708505776",
+  "jvm_tests_passed": 76,
+  "tv_validation": "pending",
+  "private_signing_files_unchanged": true,
+  "apks": [
+    {
+      "path": "C:\\Users\\Robson\\Documents\\NuvioTV-Fork\\Deliverables\\Nuvio-Teste-1362\\Nuvio-Teste-V1.3-1362-ARM64.apk",
+      "architecture": "arm64-v8a",
+      "applicationId": "com.nuvio.tv.center.test",
+      "versionCode": 1362,
+      "versionName": "0.9.0-center-v1.3-live-gain",
+      "certificate_sha256": "4953b9702476ac1820633877f44057ff6a3f81a0ce8b35453844a3f2c605e08c",
+      "sha256": "612ee59929b090c3a0c0551a9e3cb582dbbcd810b965255474416516c2e98299",
+      "signature_v2": true,
+      "signature_v3": true,
+      "zipalign": true,
+      "custom_ffmpeg_marker": true,
+      "gain_control_and_preserved_features_present": true
+    },
+    {
+      "path": "C:\\Users\\Robson\\Documents\\NuvioTV-Fork\\Deliverables\\Nuvio-Teste-1362\\Nuvio-Teste-V1.3-1362-ARM32.apk",
+      "architecture": "armeabi-v7a",
+      "applicationId": "com.nuvio.tv.center.test",
+      "versionCode": 1362,
+      "versionName": "0.9.0-center-v1.3-live-gain",
+      "certificate_sha256": "4953b9702476ac1820633877f44057ff6a3f81a0ce8b35453844a3f2c605e08c",
+      "sha256": "bcaa61b054e20d9b4b8cb471eb0253cba91ffd8f4204571de8aacac09cf05ab6",
+      "signature_v2": true,
+      "signature_v3": true,
+      "zipalign": true,
+      "custom_ffmpeg_marker": true,
+      "gain_control_and_preserved_features_present": true
+    }
+  ]
+}

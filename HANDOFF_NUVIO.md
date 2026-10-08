@@ -2,16 +2,22 @@
 
 ## Estado atual para retomar no Codex ou ChatGPT Work
 
-### Atualização prioritária — 07/10/2026, em validação
+### Atualização prioritária — 07/10/2026, APKs assinados entregues (1362)
 
 - Base conferida localmente e no remoto: 5784c37210aac5deb96021ae1fdfeda4e35ec1ea, branch nuvio-test. CONTINUIDADE_nuviotv-teste-v13.md já existia não versionado e foi preservado.
 - Relato novo do usuário: ganho da V1.3 funcionou após reiniciar o app. Código anterior atualizava o valor no renderer, mas não reconstruía a rota ao sair de 0 dB.
 - Implementada política por sessão: primeira ativação do ganho reconstrói ExoPlayer para priorizar FFmpeg/AC-3; ajustes seguintes, inclusive retorno a 0, mantêm a rota e alteram somente o ganho. A retenção termina ao iniciar outra URL. Zero não amplifica a central; nesta sessão continua a recodificação AC-3 para evitar novas interrupções.
 - Reconstrução captura posição e estado pausado, usa o mecanismo existente de restauração de faixas e mantém legendas addon/locais, cache, velocidade e atrasos. Primeira ativação pode causar breve interrupção; validação real na TCL C835 ainda pendente.
 - Menu de áudio contém Ganho do canal central, passos de 1 dB, preferência existente sincronizada com configurações. Controle disponível no ExoPlayer com decoder do app habilitado e sem Bluetooth; não implementado no MPV.
-- fullTvTest: versionCode 1362, versionName 0.9.0-center-v1.3-live-gain. Identidades e versão principal preservadas; .github sem alterações; keystore existente será somente reutilizada para assinatura.
-- 52 testes JVM passaram (6 novos da política e 46 existentes de legendas/servidor). Teste nativo ampliado para frames consecutivos 0/4/6/0/6, aguardando execução na CI. Compilação Android e APKs assinados ainda em preparação; não tratar esta seção como entrega concluída.
+- fullTvTest: versionCode 1362, versionName 0.9.0-center-v1.3-live-gain. Identidades e versão principal preservadas; .github sem alterações; keystore existente reutilizada para assinatura, sem modificações.
+- 76 testes JVM passaram: 6 novos da política, 46 existentes de legendas/servidor e 24 existentes de passthrough/recodificação. Comando reproduzível: tools/test_center_gain_and_subtitles.py --runtime C:/Users/Robson/Documents/Nuvio-Entregas-2026-10-04/jvm. Teste nativo ampliado para frames consecutivos 0/4/6/0/6 passou na CI.
+- Build autorizado concluído: https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37708505776, código e141668fb6b27343cd09a9ce9d8be5e0f301b9c6, Gradle BUILD SUCCESSFUL em 20m27s. FFmpeg ARM32/ARM64, fullDebug, fullTvTest, staging e upload passaram; .github permanece árvore 553e4971b321a530396a538ee7390cb4ba49c2bd.
+- APKs finais em C:/Users/Robson/Documents/NuvioTV-Fork/Deliverables/Nuvio-Teste-1362: Nuvio-Teste-V1.3-1362-ARM64.apk e Nuvio-Teste-V1.3-1362-ARM32.apk. Assinados por tools/sign_nuvio_test.py com chave existente, sem executar init. Identidade com.nuvio.tv.center.test, nome Nuvio Teste, versionCode 1362 e versionName 0.9.0-center-v1.3-live-gain verificados com aapt; assinaturas v2/v3 e alinhamento verificados; marcador FFmpeg modificado, controle de ganho, legendas/upload, login e abertura externa encontrados no APK.
+- Certificado compatível com entrega 1361: 4953b9702476ac1820633877f44057ff6a3f81a0ce8b35453844a3f2c605e08c. Conteúdo dos três arquivos privados de assinatura permaneceu inalterado antes/depois da assinatura. SHA-256 ARM64: 612ee59929b090c3a0c0551a9e3cb582dbbcd810b965255474416516c2e98299; ARM32: bcaa61b054e20d9b4b8cb471eb0253cba91ffd8f4204571de8aacac09cf05ab6. Evidências públicas em NUVIO_TESTE_GANHO_APK_VALIDACAO.json e VALIDACAO.json na entrega.
+- Usuário não sabe qual ABI está instalada na TCL C835. Ambos entregues; usar arquitetura aceita pelo Android, sem desinstalar se ARM64 for recusado. Nenhuma instalação na TV foi realizada; aplicação efetiva, duração da primeira interrupção, foco, restauração de faixas/legendas e preservação de dados na atualização ainda exigem teste real. Não afirmar que os testes automatizados comprovam esses comportamentos na TV.
 - Restrição preservada: não instalar/desinstalar/limpar dados da V1.2. Atualizar somente Nuvio Teste com certificado persistente e versão maior.
+
+### Entrega anterior — 1361 (histórico preservado)
 
 - Variante **Nuvio Teste V1.3** concluída, pacote **com.nuvio.tv.center.test**, versão 1361 / 0.9.0-center-v1.3-local-subtitles. Coexiste com a V1.2; tem armazenamento, conta local, addons e preferências independentes. Nenhum comando de instalação/desinstalação/limpeza foi executado na TV.
 - Principal continua com.nuvio.tv.center / Nuvio no código. Todas as fontes de player, áudio, login, abertura externa e legendas da V1.3 anterior preservadas. Ajuste da central 0–+6 dB e FFmpeg modificado mantidos; QR, SRT/VTT/ASS/SSA, seletor e envio pelo celular incluídos.
