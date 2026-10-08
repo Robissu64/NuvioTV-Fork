@@ -332,6 +332,16 @@ android {
     }
 }
 
+// Raise only the independent test package; the principal keeps its existing version.
+androidComponents {
+    onVariants(selector().withBuildType("tvTest")) { variant ->
+        variant.outputs.forEach { output ->
+            output.versionCode.set(1362)
+            output.versionName.set("0.9.0-center-v1.3-live-gain")
+        }
+    }
+}
+
 // Keep the existing workflow/task and artifact path intact. It builds the main
 // package first, then stages distinctly named unsigned test APKs for local signing.
 val stageNuvioTestApks = tasks.register<Copy>("stageNuvioTestApks") {

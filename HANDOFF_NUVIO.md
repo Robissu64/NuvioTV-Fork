@@ -2,6 +2,17 @@
 
 ## Estado atual para retomar no Codex ou ChatGPT Work
 
+### Atualização prioritária — 07/10/2026, em validação
+
+- Base conferida localmente e no remoto: 5784c37210aac5deb96021ae1fdfeda4e35ec1ea, branch nuvio-test. CONTINUIDADE_nuviotv-teste-v13.md já existia não versionado e foi preservado.
+- Relato novo do usuário: ganho da V1.3 funcionou após reiniciar o app. Código anterior atualizava o valor no renderer, mas não reconstruía a rota ao sair de 0 dB.
+- Implementada política por sessão: primeira ativação do ganho reconstrói ExoPlayer para priorizar FFmpeg/AC-3; ajustes seguintes, inclusive retorno a 0, mantêm a rota e alteram somente o ganho. A retenção termina ao iniciar outra URL. Zero não amplifica a central; nesta sessão continua a recodificação AC-3 para evitar novas interrupções.
+- Reconstrução captura posição e estado pausado, usa o mecanismo existente de restauração de faixas e mantém legendas addon/locais, cache, velocidade e atrasos. Primeira ativação pode causar breve interrupção; validação real na TCL C835 ainda pendente.
+- Menu de áudio contém Ganho do canal central, passos de 1 dB, preferência existente sincronizada com configurações. Controle disponível no ExoPlayer com decoder do app habilitado e sem Bluetooth; não implementado no MPV.
+- fullTvTest: versionCode 1362, versionName 0.9.0-center-v1.3-live-gain. Identidades e versão principal preservadas; .github sem alterações; keystore existente será somente reutilizada para assinatura.
+- 52 testes JVM passaram (6 novos da política e 46 existentes de legendas/servidor). Teste nativo ampliado para frames consecutivos 0/4/6/0/6, aguardando execução na CI. Compilação Android e APKs assinados ainda em preparação; não tratar esta seção como entrega concluída.
+- Restrição preservada: não instalar/desinstalar/limpar dados da V1.2. Atualizar somente Nuvio Teste com certificado persistente e versão maior.
+
 - Variante **Nuvio Teste V1.3** concluída, pacote **com.nuvio.tv.center.test**, versão 1361 / 0.9.0-center-v1.3-local-subtitles. Coexiste com a V1.2; tem armazenamento, conta local, addons e preferências independentes. Nenhum comando de instalação/desinstalação/limpeza foi executado na TV.
 - Principal continua com.nuvio.tv.center / Nuvio no código. Todas as fontes de player, áudio, login, abertura externa e legendas da V1.3 anterior preservadas. Ajuste da central 0–+6 dB e FFmpeg modificado mantidos; QR, SRT/VTT/ASS/SSA, seletor e envio pelo celular incluídos.
 - Build final: https://github.com/Robissu64/NuvioTV-Fork/actions/runs/37206601339, código **7a49feb13fa1baf192ab5530052879ea8eed3480**, BUILD SUCCESSFUL em 19m37s. Branch nuvio-test. Commits posteriores de relatório/documentação não mudam o código do APK.

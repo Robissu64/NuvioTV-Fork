@@ -1856,6 +1856,7 @@
     <string name="audio_center_mix_value_db">%1$d dB</string>
     <string name="audio_center_mix_help">Center Mix Level in dB relative to metadata or default (-3 dB)</string>
     <string name="audio_center_mix_unavailable">Center mix is only available when FFmpeg downmix is active.</string>
+    <string name="audio_center_channel_gain_player_hint">Saved automatically. The first adjustment may briefly reload playback.</string>
     <string name="audio_center_channel_gain">Center channel gain</string>
     <string name="audio_center_channel_gain_value_db">+%1$d dB</string>
     <string name="audio_center_channel_gain_sub">Boosts the real centre channel from 0 to +6 dB and re-encodes surround audio as AC-3 5.1.</string>

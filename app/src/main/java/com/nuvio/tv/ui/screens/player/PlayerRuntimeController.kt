@@ -534,6 +534,9 @@ class PlayerRuntimeController(
     /** nt12: fingerprint of the constructor-baked configuration of the live ExoPlayer;
      *  a transition may reuse the instance only when the fresh derivation matches. */
     internal var lastExoConstructionFingerprint: ExoConstructionFingerprint? = null
+    internal var centerGainAc3StreamUrl: String? = null
+    internal var centerGainRebuildInFlight = false
+    internal var centerGainRebuildJob: kotlinx.coroutines.Job? = null
     /** nt16: the settings last pushed onto the media-source factory, so the chunk-0
      *  pre-start can derive geometry without suspending on the settings Flow. */
     @Volatile internal var lastAppliedPlayerSettings: PlayerSettings? = null

@@ -71,6 +71,9 @@ internal fun AudioSelectionOverlay(
     isAmplificationAvailable: Boolean,
     centerMixLevelDb: Int,
     isCenterMixAvailable: Boolean,
+    centerChannelGainDb: Int,
+    isCenterChannelGainAvailable: Boolean,
+    onCenterChannelGainChange: (Int) -> Unit,
     persistAmplification: Boolean,
     onTrackSelected: (Int) -> Unit,
     onAudioDelayChange: (Int) -> Unit,
@@ -81,6 +84,8 @@ internal fun AudioSelectionOverlay(
     modifier: Modifier = Modifier
 ) {
     val tracksFocusRequester = remember { FocusRequester() }
+    val gainMinusFocusRequester = remember { FocusRequester() }
+    val gainPlusFocusRequester = remember { FocusRequester() }
     val delayMinusFocusRequester = remember { FocusRequester() }
     val delayPlusFocusRequester = remember { FocusRequester() }
     val ampMinusFocusRequester = remember { FocusRequester() }
@@ -182,6 +187,32 @@ internal fun AudioSelectionOverlay(
                 .padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
             PanelEyebrow(text = stringResource(R.string.audio_dialog_title))
+
+            if (isCenterChannelGainAvailable) {
+                val gain = centerChannelGainDb.coerceIn(0, 6)
+                AdjustmentSection(
+                    title = stringResource(R.string.audio_center_channel_gain),
+                    valueText = stringResource(R.string.audio_center_channel_gain_value_db, gain),
+                    helperText = stringResource(R.string.audio_center_channel_gain_player_hint),
+                    canDecrease = gain > 0,
+                    canIncrease = gain < 6,
+                    minusFocusRequester = gainMinusFocusRequester,
+                    plusFocusRequester = gainPlusFocusRequester,
+                    minusLeftFocusRequester = FocusRequester.Default,
+                    plusLeftFocusRequester = if (gain > 0) gainMinusFocusRequester else FocusRequester.Default,
+                    upFocusRequester = null,
+                    downFocusRequester = null,
+                    onDecrease = {
+                        onCenterChannelGainChange(gain - 1)
+                        if (gain == 1) runCatching { gainPlusFocusRequester.requestFocus() }
+                    },
+                    onIncrease = {
+                        onCenterChannelGainChange(gain + 1)
+                        if (gain == 5) runCatching { gainMinusFocusRequester.requestFocus() }
+                    }
+                )
+                Spacer(modifier = Modifier.height(NuvioTheme.spacing.sm))
+            }
 
             PanelActionRow(
                 label = if (editorOpen) {

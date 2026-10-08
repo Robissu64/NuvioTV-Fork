@@ -1564,6 +1564,11 @@ fun PlayerRuntimeController.onEvent(event: PlayerEvent) {
                 )
             }
         }
+        is PlayerEvent.OnSetCenterChannelGainDb -> {
+            if (_uiState.value.isCenterChannelGainAvailable) {
+                scope.launch { playerSettingsDataStore.setCenterChannelGainDb(event.db) }
+            }
+        }
         is PlayerEvent.OnSetCenterMixLevelDb -> {
             val clampedDb = event.db.coerceIn(CENTER_MIX_LEVEL_MIN_DB, CENTER_MIX_LEVEL_MAX_DB)
             applyCenterMixLevel(clampedDb)

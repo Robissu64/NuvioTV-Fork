@@ -153,7 +153,7 @@ internal fun PlayerRuntimeController.clearPendingEngineSwitchTrackPreference() {
     pendingEngineSwitchTrackPreference = null
 }
 
-private fun PlayerRuntimeController.rememberCurrentTrackPreferenceForEngineSwitch() {
+internal fun PlayerRuntimeController.rememberCurrentTrackPreferenceForEngineSwitch() {
     val state = _uiState.value
     val sourceEngine = currentInternalPlayerEngine
     logSwitchTrace(

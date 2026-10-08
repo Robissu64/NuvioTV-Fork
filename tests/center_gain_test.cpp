@@ -8,6 +8,22 @@
 int main() {
   const float gain4 = std::pow(10.0f, 4.0f / 20.0f);
   const float gain6 = std::pow(10.0f, 6.0f / 20.0f);
+  // Consecutive decoded frames use the latest setting, including returning to 0.
+  for (int db : {0, 4, 6, 0, 6}) {
+    float frame[6][2] = {};
+    float* planes[6];
+    for (int c = 0; c < 6; ++c) {
+      planes[c] = frame[c];
+      frame[c][0] = 0.25f;
+      frame[c][1] = -0.25f;
+    }
+    nuvio_center::apply(planes, 6, 2, 2, db);
+    for (int c = 0; c < 6; ++c) {
+      const float expected = c == 2 ? 0.25f * std::pow(10.0f, db / 20.0f) : 0.25f;
+      assert(std::fabs(frame[c][0] - expected) < 1e-6f);
+      assert(std::fabs(frame[c][1] + expected) < 1e-6f);
+    }
+  }
   // Test a center at every position: the algorithm must not assume index 2.
   for (int count : {3, 6, 8}) {
     for (int fc = 0; fc < count; ++fc) {

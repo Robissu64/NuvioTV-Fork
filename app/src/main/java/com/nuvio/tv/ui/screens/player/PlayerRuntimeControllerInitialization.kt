@@ -311,7 +311,8 @@ internal fun PlayerRuntimeController.initializePlayer(
     headers: Map<String, String>,
     overrideInternalPlayerEngine: InternalPlayerEngine? = null,
     allowEngineFailover: Boolean = true,
-    startPaused: Boolean = false
+    startPaused: Boolean = false,
+    preserveCenterGainPlayback: Boolean = false
 ) {
     if (url.isEmpty()) {
         _uiState.update { it.copy(error = context.getString(R.string.player_error_no_stream_url), showLoadingOverlay = false) }
@@ -321,6 +322,7 @@ internal fun PlayerRuntimeController.initializePlayer(
 
     scope.launch {
         try {
+            if (centerGainAc3StreamUrl != url) centerGainAc3StreamUrl = null
             // nt12 reuse: snapshot the live player's constructor-baked companions
             // before the per-stream resets and construction overwrite the fields.
             // Consumed only on the reuse branch at the build fork.
@@ -806,7 +808,14 @@ internal fun PlayerRuntimeController.initializePlayer(
             isAudioDisabledForCurrentPlayback = audioDisabledForStream
             isVc1TrackSelectionBypassActiveForCurrentPlayback = vc1TrackSelectionBypassActive
 
-            val startupSubtitlePreparation = prepareStreamStartSubtitles(playerSettings)
+            val startupSubtitlePreparation = if (preserveCenterGainPlayback) {
+                // Keep the exact addon/local selection and its cache for this same-media rebuild.
+                StartupSubtitlePreparation(
+                    fetchedSubtitles = _uiState.value.addonSubtitles,
+                    attachedSubtitles = listOfNotNull(_uiState.value.selectedAddonSubtitle),
+                    fetchCompleted = true
+                )
+            } else prepareStreamStartSubtitles(playerSettings)
             // AFR review F1: absolute deadline (see MPV path above).
             withTimeoutOrNull(AFR_PREFLIGHT_ABSOLUTE_DEADLINE_MS) { afrJob.await() }
                 ?: run {
@@ -999,9 +1008,12 @@ internal fun PlayerRuntimeController.initializePlayer(
             val isBluetoothAudioOutput = currentAudioOutputRoute?.isBluetooth == true ||
                 AudioOutputRouteDetector.isBluetoothMediaOutput(context)
             // Force-optical must never win over Bluetooth: AC3/DTS AudioTrack to A2DP fails hard.
-            val isForcePassthroughActive = !isBluetoothAudioOutput &&
-                playerSettings.forceOpticalPassthrough &&
-                playerSettings.decoderPriority != 0
+            val isForcePassthroughActive = com.nuvio.tv.core.player.CenterChannelGainPolicy.forceAc3(
+                playerSettings.centerChannelGainDb,
+                centerGainAc3StreamUrl == url,
+                !isBluetoothAudioOutput && playerSettings.decoderPriority != 0
+            )
+            if (isForcePassthroughActive) centerGainAc3StreamUrl = url
             // Audio review F4: force-AC3 no longer escalates the *global*
             // extension mode to PREFER (which put software AV1 video decode
             // ahead of MediaCodec). The FFmpeg audio renderer is instead
@@ -1352,7 +1364,9 @@ internal fun PlayerRuntimeController.initializePlayer(
                 // resume position is resolved. Runway to here is the whole
                 // player build; SAVED_PROGRESS_AWAIT prices the residual.
                 awaitSavedProgressLoad()
-                val initialResumePosition = resolvePendingInitialResumePosition()
+                val initialResumePosition = if (preserveCenterGainPlayback) {
+                    _uiState.value.pendingSeekPosition ?: 0L
+                } else resolvePendingInitialResumePosition()
                 playbackAnalyticsDiagnostics.setStartupStartPosition(initialResumePosition)
                 playbackAnalyticsDiagnostics.recordRawEventLine(
                     "PLAYER_INIT: engine=EXOPLAYER host=${url.safeHost()} " +
@@ -2467,6 +2481,16 @@ internal fun PlayerRuntimeController.initializePlayer(
                     showLoadingOverlay = false,
                     loadingIssueReportVisible = false,
                     loadingIssueElapsedMs = 0L
+                )
+            }
+        } finally {
+            if (preserveCenterGainPlayback) {
+                centerGainRebuildInFlight = false
+                // A click while the new decoder was being created must not retain an old gain.
+                val latest = currentPlayerSettingsForReport
+                ffmpegAudioRenderer?.setCenterChannelGainDb(latest.centerChannelGainDb)
+                ffmpegAudioRenderer?.setForceOpticalPassthrough(
+                    isCenterGainRouteEligible(latest) && centerGainAc3StreamUrl == currentStreamUrl
                 )
             }
         }

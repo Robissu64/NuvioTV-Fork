@@ -206,7 +206,7 @@ internal fun PlayerRuntimeController.applyBluetoothAudioRouteInPlace(isBluetooth
 
     val settings = currentPlayerSettingsForReport
     val forceOptical = !isBluetooth &&
-        settings.forceOpticalPassthrough &&
+        (settings.forceOpticalPassthrough || centerGainAc3StreamUrl == currentStreamUrl) &&
         settings.decoderPriority != 0
     val downmixEnabled = settings.effectiveDownmixEnabled || isBluetooth
     val outputChannels = if (isBluetooth) {

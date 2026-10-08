@@ -1,5 +1,14 @@
 # Teste experimental — Nuvio V1.3
 
+## Ganho durante a reprodução — atualização 1362
+
+- Atualizar somente Nuvio Teste usando APK final assinado (mesma chave), sem desinstalar ou limpar dados. ARM64 somente se a instalação/sistema aceitar arm64-v8a; ARM32 também será entregue.
+- ExoPlayer, preferir decodificadores nativos, downmix/tunneling desligados, velocidade 1x, saída digital adequada à cadeia 5.1. Conferir DRC OFF, NIGHT N.OFF, VOICE V.OFF e STANDARD no Sony para a comparação.
+- Começar em 0 dB e abrir Áudio → Ganho do canal central. Testar 0→4, 4→6, 6→0 e 0→6, sem encerrar o app. Primeira ativação pode recarregar brevemente; seguintes devem preservar a reprodução e traseiras. Conferir valor também nas configurações gerais e ao reabrir.
+- Repetir pausado e reproduzindo; selecionar faixa de áudio não padrão e legenda embutida, local e addon. Conferir posição, pausa, velocidade, atrasos e faixa após primeira ativação. Testar sequência rápida de cliques e limites 0/6 com controle remoto.
+- Zero mantém a rota AC-3 nesta sessão sem amplificar a central; começar outra mídia em zero usa a configuração normal. Comparar o mesmo trecho e anotar fonte/codec/ganho e interrupção observada.
+- Registrar separadamente: primeiro reload, mudanças positivas, retorno a zero, foco do controle, assinatura/atualização e preservação de dados. Não inferir funcionamento real a partir dos testes JVM/C++ ou do build.
+
 Não há confirmação de funcionamento desta etapa na TV. O usuário aprovou áudio V1.2 e QR na versão anterior; esses caminhos foram preservados no código.
 
 1. **Instalação separada:** manter a V1.2 aprovada instalada. Instalar o APK final assinado **Nuvio-Teste-V1.3-ARM32.apk** ou **ARM64.apk**, conforme a arquitetura aceita pelo Android da TV. Ele usa com.nuvio.tv.center.test e deve coexistir com a V1.2; não atualizar/desinstalar a principal. A variante tem configurações independentes: entrar na conta, configurar addons e conferir preferências nela. Não escolher os APKs principais ou unsigned do Actions.

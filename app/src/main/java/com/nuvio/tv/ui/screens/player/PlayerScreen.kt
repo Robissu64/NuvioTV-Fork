@@ -1717,6 +1717,11 @@ fun PlayerScreen(
             persistAmplification = uiState.persistAudioAmplification,
             centerMixLevelDb = uiState.centerMixLevelDb,
             isCenterMixAvailable = uiState.isCenterMixAvailable,
+            centerChannelGainDb = uiState.centerChannelGainDb,
+            isCenterChannelGainAvailable = uiState.isCenterChannelGainAvailable,
+            onCenterChannelGainChange = {
+                viewModel.onEvent(PlayerEvent.OnSetCenterChannelGainDb(it))
+            },
             onTrackSelected = { viewModel.onEvent(PlayerEvent.OnSelectAudioTrack(it)) },
             onAudioDelayChange = { viewModel.onEvent(PlayerEvent.OnSetAudioDelayMs(it)) },
             onAmplificationChange = { viewModel.onEvent(PlayerEvent.OnSetAudioAmplificationDb(it)) },
